@@ -6,10 +6,12 @@ import com.nori.springboard.service.KakaoAccessToken;
 import com.nori.springboard.service.KakaoMemberInfoResponse;
 import com.nori.springboard.service.LoginService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Slf4j
@@ -28,6 +30,17 @@ public class LoginController {
 		Member member = loginService.findMemberOrJoin(memberInfo);
 
 		loginService.createSession(member.getId(), request);
+
+		return "redirect:/";
+	}
+
+	@PostMapping("/logout")
+	public String logout(HttpServletRequest request) {
+		HttpSession session = request.getSession(false);
+
+		if (session != null) {
+			session.invalidate();
+		}
 
 		return "redirect:/";
 	}
