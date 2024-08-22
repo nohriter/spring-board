@@ -1,0 +1,38 @@
+<!-- start header.html -->
+<header>
+  <div class="d-flex flex-column flex-md-row align-items-center pb-3 mb-4 border-bottom">
+    <a th:href="@{/}" class="d-flex align-items-center link-body-emphasis text-decoration-none">
+      <span class="ms-2 fs-4">게시판</span>
+    </a>
+    <nav class="d-inline-flex mt-2 mt-md-0 ms-md-auto">
+      <!-- 세션에 로그인 정보가 있는지 확인하여 다른 버튼을 표시 -->
+      <th:block th:if="${session.loginMember != null}">
+        <a th:href="@{/myInfo}" class="me-3 py-2 link-body-emphasis text-decoration-none">내정보</a>
+        <a th:href="@{/posts}" class="me-3 py-2 link-body-emphasis text-decoration-none">글쓰기</a>
+        <a href="#" onclick="logout()" class="me-3 py-2 link-body-emphasis text-decoration-none">로그아웃</a>
+      </th:block>
+      <th:block th:if="${session.loginMember == null}">
+        <a th:href="@{https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=ca9f670ea88bce3a4a6f03d0c919628f&redirect_uri=http://localhost:8080/login}" class="me-3 py-2 link-body-emphasis text-decoration-none">로그인</a>
+        <a th:href="@{https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=ca9f670ea88bce3a4a6f03d0c919628f&redirect_uri=http://localhost:8080/login}" class="me-3 py-2 link-body-emphasis text-decoration-none">회원가입</a>
+      </th:block>
+    </nav>
+  </div>
+
+  <script th:inline="javascript">
+    function logout() {
+      fetch('/logout', {
+        method: 'POST',
+      }).then(response => {
+        if (response.ok) {
+          alert("로그아웃 되었습니다.");
+          window.location.href = "/"; // 로그아웃 후 홈 페이지로 이동
+        } else {
+          console.error('로그아웃에 실패했습니다.');
+        }
+      }).catch(error => {
+        console.error('네트워크 오류:', error);
+      });
+    }
+  </script>
+</header>
+<!-- end header.html -->

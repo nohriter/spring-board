@@ -8,6 +8,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -29,4 +30,11 @@ public class Member extends BaseEntity  {
 	private String nickname;
 
 	private boolean isDeleted;
+
+	@Builder
+	public Member(String loginId, String nickname) {
+		this.loginId = loginId;
+		this.nickname = nickname;
+	}
+
 }
