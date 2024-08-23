@@ -1,5 +1,7 @@
 package com.nori.springboard.service;
 
+import static com.nori.springboard.config.SessionConst.*;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nori.springboard.entity.Member;
@@ -20,8 +22,6 @@ import org.springframework.web.client.RestTemplate;
 @Service
 @RequiredArgsConstructor
 public class LoginService {
-
-	public static final String LOGIN_MEMBER = "loginMember";
 
 	private static final String REDIRECT_URI 		  = "http://localhost:8080/login";
 	private static final String TOKEN_REQUEST_URI 	  = "https://kauth.kakao.com/oauth/token";
@@ -70,4 +70,5 @@ public class LoginService {
 		HttpSession session = request.getSession();
 		session.setAttribute(LOGIN_MEMBER, id);
 	}
+
 }
