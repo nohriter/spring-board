@@ -1,5 +1,6 @@
 package com.nori.springboard.controller;
 
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.nori.springboard.entity.Member;
 import com.nori.springboard.service.KakaoAccessToken;
@@ -11,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Slf4j
@@ -34,7 +34,7 @@ public class LoginController {
 		return "redirect:/";
 	}
 
-	@PostMapping("/logout")
+	@GetMapping("/logout")
 	public String logout(HttpServletRequest request) {
 		HttpSession session = request.getSession(false);
 
