@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Include Example</title>
+  <div th:insert="~{common/head :: head}"></div>
+</head>
+<body>
+<div class="container py-3">
+  <div th:insert="~{common/header :: header}"></div>
+    <main>
+      <!-- 글쓰기 폼 -->
+      <div class="row justify-content-center">
+        <div class="col-12 col-md-6">
+          <form th:action="@{/board/write}" method="post">
+            <div class="mb-3">
+              <label for="category" class="form-label">카테고리</label>
+              <select class="form-select" id="category" name="categoryType" required>
+                <option value="">카테고리 선택</option>
+                <option value="GENERAL">일반</option>
+                <option value="QUESTION">질문</option>
+                <option value="INFORMATION">정보</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="title" class="form-label">제목</label>
+              <input type="text" class="form-control" id="title" name="title" required>
+            </div>
+            <div class="mb-3">
+              <label for="content" class="form-label">내용</label>
+              <textarea class="form-control" id="content" name="content" rows="6" required></textarea>
+            </div>
+            <input type="hidden" name="writerId" th:value="${memberId}">
+            <button type="submit" class="btn btn-primary">글쓰기 완료</button>
+          </form>
+        </div>
+      </div>
+    </main>
+</div>
+<div th:insert="~{common/footer :: footer}"></div>
+</body>
+</html>

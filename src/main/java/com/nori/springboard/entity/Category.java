@@ -26,6 +26,6 @@ public class Category extends BaseEntity  {
 
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
-	private CategoryType name;
+	private CategoryType categoryType;
 
 }

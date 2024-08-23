@@ -11,6 +11,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -42,4 +43,12 @@ public class Post extends BaseEntity {
 	private Member writer;
 
 	private boolean isDeleted;
+
+	@Builder
+	public Post(String title, String content, Category category, Member writer) {
+		this.title = title;
+		this.content = content;
+		this.category = category;
+		this.writer = writer;
+	}
 }
