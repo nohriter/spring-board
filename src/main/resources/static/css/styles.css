@@ -1,0 +1,43 @@
+.pagination .page-item .page-link {
+  color: black;
+  background-color: #f8f9fa;
+  border: 1px solid #ced4da;
+}
+
+.pagination .page-item .page-link:hover {
+  background-color: #e9ecef;
+  color: black;
+}
+
+.pagination .page-item.active .page-link {
+  background-color: #343a40;
+  color: white;
+  border-color: #343a40;
+}
+
+.pagination .page-item.disabled .page-link {
+  color: #6c757d;
+  background-color: #f8f9fa;
+  border-color: #ced4da;
+}
+
+/* 기본 링크 스타일 재정의 */
+.table a {
+  color: inherit; /* 링크의 색상을 부모 요소의 색상과 동일하게 설정 */
+  text-decoration: none; /* 링크의 밑줄 제거 */
+}
+
+/* 제목에 마우스를 올렸을 때 언더라인 추가 */
+.table a:hover {
+  text-decoration: underline; /* 제목 링크에 마우스를 올리면 언더라인 추가 */
+}
+
+.table {
+  --bs-table-bg: transparent !important; /* 테이블 배경을 투명하게 설정 */
+  --bs-table-hover-bg: transparent !important; /* hover 배경을 투명하게 설정 */
+}
+
+.table tbody tr:hover {
+  background-color: #f2f2f2 !important;
+}
+

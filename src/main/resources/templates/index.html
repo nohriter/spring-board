@@ -6,9 +6,30 @@
     <div th:insert="~{common/header :: header}"></div>
 </div>
 
+<!-- 카테고리 선택 메뉴 -->
+<div class="container py-3">
+    <div class="d-flex justify-content-center">
+        <div class="btn-group" role="group">
+            <a th:href="@{/board/view(category='all', page=1)}"
+               th:classappend="${category == 'all'} ? 'btn-dark' : 'btn-light'"
+               class="btn border">전체글</a>
+            <a th:href="@{/board/view(category='information', page=1)}"
+               th:classappend="${category == 'information'} ? 'btn-dark' : 'btn-light'"
+               class="btn border">정보</a>
+            <a th:href="@{/board/view(category='question', page=1)}"
+               th:classappend="${category == 'question'} ? 'btn-dark' : 'btn-light'"
+               class="btn border">질문</a>
+            <a th:href="@{/board/view(category='general', page=1)}"
+               th:classappend="${category == 'general'} ? 'btn-dark' : 'btn-light'"
+               class="btn border">일반</a>
+        </div>
+    </div>
+</div>
+
+
 <!--start 글 목록 출력-->
 <div class="py-5 table-responsive">
-    <table class="table text-center">
+    <table class="table table-custom text-center">
         <thead>
         <tr>
             <th scope="col">번호</th>
@@ -25,7 +46,7 @@
             <th scope="row" th:text="${post.id}">1</th>
             <td th:text="${post.categoryName}">Mark</td>
             <td>
-                <a th:href="'/posts/' + ${post.id}" th:text="${post.title}" class="post-link"></a>
+                <a th:href="'/posts/' + ${post.id}" th:text="${post.title}"></a>
             </td>
             <td th:text="${post.writerName}">@mdo</td>
             <td th:text="${post.createAt}">@mdo</td>
@@ -36,6 +57,7 @@
     </table>
 </div>
 <!--end 글 목록 출력-->
+
 
 <!--페이지 및 검색-->
 <div class="mb-5">
