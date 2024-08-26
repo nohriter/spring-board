@@ -6,6 +6,143 @@
     <div th:insert="~{common/header :: header}"></div>
 </div>
 
+<!--start 글 목록 출력-->
+<div class="py-5 table-responsive">
+    <table class="table text-center">
+        <thead>
+        <tr>
+            <th scope="col">번호</th>
+            <th scope="col">카테고리</th>
+            <th scope="col">제목</th>
+            <th scope="col">글쓴이</th>
+            <th scope="col">작성일</th>
+            <th scope="col">조회수</th>
+            <th scope="col">추천</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="post : ${posts}">
+            <th scope="row" th:text="${post.id}">1</th>
+            <td th:text="${post.categoryName}">Mark</td>
+            <td>
+                <a th:href="'/posts/' + ${post.id}" th:text="${post.title}" class="post-link"></a>
+            </td>
+            <td th:text="${post.writerName}">@mdo</td>
+            <td th:text="${post.createAt}">@mdo</td>
+            <td th:text="${post.viewCount}">@mdo</td>
+            <td>@1</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<!--end 글 목록 출력-->
+
+<!--페이지 및 검색-->
+<div class="mb-5">
+    <!--페이징-->
+    <nav class="pagination justify-content-center text-center mb-3">
+
+        <ul class="pagination">
+
+            <!-- 페이지 번호 생성 -->
+            <th:block th:if="${totalPages > 0}">
+                <th:block th:with="
+                    currentPage=${posts.number + 1},
+                    startPage=${T(java.lang.Math).max(1, (currentPage - 1) / 5 * 5 + 1)},
+                    endPage=${T(java.lang.Math).min(startPage + 4, totalPages)}">
+
+                    <li class="page-item" th:if="${startPage > 1}">
+                        <a class="page-link" href="#" th:onclick="goToPage(1)">
+                            <span>&laquo;</span>
+                        </a>
+                    </li>
+
+                    <li class="page-item" th:if="${currentPage > 5}">
+                        <a class="page-link" href="#" th:onclick="goToPage([[${startPage - 1}]])">
+                            <span>이전</span>
+                        </a>
+                    </li>
+
+                    <th:block th:each="pageNo : ${#numbers.sequence(startPage, endPage)}">
+                        <li class="page-item" th:classappend="${pageNo == currentPage} ? 'active' : ''">
+                            <a class="page-link" href="#" th:text="${pageNo}" th:onclick="goToPage([[${pageNo}]])"></a>
+                        </li>
+                    </th:block>
+
+                    <li class="page-item" th:if="${endPage < totalPages}">
+                        <a class="page-link" href="#" th:onclick="goToPage([[${endPage + 1}]])">
+                            <span>다음</span>
+                        </a>
+                    </li>
+
+                    <li class="page-item" th:if="${endPage < totalPages}">
+                        <a class="page-link" href="#" th:onclick="goToPage([[${totalPages}]])">
+                            <span>&raquo;</span>
+                        </a>
+                    </li>
+                </th:block>
+            </th:block>
+
+        </ul>
+
+    </nav>
+    <!--페이징-->
+
+    <!--검색-->
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-6">
+            <div class="d-flex">
+                <div class="dropdown me-2">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        제목+내용
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#">제목</a></li>
+                        <li><a class="dropdown-item" href="#">내용</a></li>
+                        <li><a class="dropdown-item" href="#">글쓴이</a></li>
+                        <li><a class="dropdown-item" href="#">댓글</a></li>
+                    </ul>
+                </div>
+
+                <form class="d-flex flex-grow-1" role="search">
+                    <input class="form-control me-2" type="search" placeholder="Search">
+                    <button class="btn btn-outline-dark" type="submit">Search</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!--검색-->
+</div>
+
+<script th:inline="javascript">
+
+  const currentPage = [[${posts.number}]] + 1;
+  const totalPages = [[${totalPages}]];
+  const category = [[${category}]];
+
+  // 이전 페이지로 이동하는 함수
+  function previousPage() {
+    if (currentPage > 1) {
+      goToPage(currentPage - 1);
+    }
+  }
+
+  // 다음 페이지로 이동하는 함수
+  function nextPage() {
+    if (currentPage < totalPages) {
+      goToPage(currentPage + 1);
+    }
+  }
+
+  // 특정 페이지로 이동하는 함수
+  function goToPage(page) {
+    // 페이지 이동하는 로직 추가
+    window.location.href = '/board/view?category=' + category + '&page=' + page;
+  }
+
+</script>
+
+
 <div th:insert="~{common/footer :: footer}"></div>
 </body>
 </html>

@@ -8,7 +8,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -32,9 +31,9 @@ public class Post extends BaseEntity {
 	@Column(nullable = false, length = 2000)
 	private String content;
 
-	private long viewsCount;
+	private long viewCount;
 
-	@OneToOne
+	@ManyToOne
 	@JoinColumn(name = "category_id")
 	private Category category;
 

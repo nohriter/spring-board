@@ -16,11 +16,11 @@ public class PostResponse {
 	private String writerName;
 	private LocalDateTime createAt;
 	private LocalDateTime updatedAt;
-	private Long hitCount;
+	private Long viewCount;
 
 	@Builder
 	public PostResponse(Long id, String categoryName, String title, String content, Long writerId,
-		String writerName, LocalDateTime createAt, LocalDateTime updatedAt, Long hitCount) {
+		String writerName, LocalDateTime createAt, LocalDateTime updatedAt, Long viewCount) {
 		this.id = id;
 		this.categoryName = categoryName;
 		this.title = title;
@@ -29,20 +29,20 @@ public class PostResponse {
 		this.writerName = writerName;
 		this.createAt = createAt;
 		this.updatedAt = updatedAt;
-		this.hitCount = hitCount;
+		this.viewCount = viewCount;
 	}
 
 	public static PostResponse of(Post post) {
 		return PostResponse.builder()
 			.id(post.getId())
-			.categoryName(post.getCategory().getCategoryType().name())
+			.categoryName(post.getCategory().getCategoryType().getValue())
 			.title(post.getTitle())
 			.content(post.getContent())
 			.writerId(post.getWriter().getId())
 			.writerName(post.getWriter().getNickname())
 			.createAt(post.getCreatedAt())
 			.updatedAt(post.getUpdatedAt())
-			.hitCount(post.getViewsCount())
+			.viewCount(post.getViewCount())
 			.build();
 	}
 }

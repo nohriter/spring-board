@@ -20,7 +20,8 @@ public class WebConfig implements WebMvcConfigurer {
 	public void addInterceptors(InterceptorRegistry registry) {
 		registry.addInterceptor(new LoginCheckInterceptor())
 			.addPathPatterns("/**")
-			.excludePathPatterns("/", "/login", "/logout", "/error", "/favicon.ico")
+			.excludePathPatterns("/", "/login", "/logout", "/board/view",
+				"/error", "/favicon.ico")
 			.order(1);
 	}
 
