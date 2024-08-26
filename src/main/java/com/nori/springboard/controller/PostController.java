@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -39,6 +40,17 @@ public class PostController {
 		model.addAttribute("totalPages", totalPages);
 
 		return "index";
+	}
+
+	@GetMapping("/board/view/{category}/{postId}")
+	public String getPosts(@PathVariable(value = "category") String category, @PathVariable Long postId, Model model) {
+		log.info("/board/view/{postId}");
+		PostResponse post = postService.getPost(postId);
+
+		model.addAttribute("post", post);
+		model.addAttribute("category", post.getCategoryName());
+
+		return "/post/viewPost";
 	}
 
 	@PostMapping("/board/write")

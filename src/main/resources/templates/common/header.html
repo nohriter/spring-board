@@ -18,6 +18,27 @@
     </nav>
   </div>
 
+  <!-- 카테고리 선택 메뉴 -->
+  <div class="container py-3">
+    <div class="d-flex justify-content-center">
+      <div class="btn-group" role="group">
+        <a th:href="@{/board/view(category='all', page=1)}"
+           th:classappend="${category == 'all' || category == '전체'} ? 'btn-dark' : 'btn-light'"
+           class="btn border">전체글</a>
+        <a th:href="@{/board/view(category='information', page=1)}"
+           th:classappend="${category == 'information' || category == '정보'} ? 'btn-dark' : 'btn-light'"
+           class="btn border">정보</a>
+        <a th:href="@{/board/view(category='question', page=1)}"
+           th:classappend="${category == 'question' || category == '질문'} ? 'btn-dark' : 'btn-light'"
+           class="btn border">질문</a>
+        <a th:href="@{/board/view(category='general', page=1)}"
+           th:classappend="${category == 'general' || category == '일반'} ? 'btn-dark' : 'btn-light'"
+           class="btn border">일반</a>
+      </div>
+    </div>
+  </div>
+  <!-- 카테고리 선택 메뉴 -->
+
   <script th:inline="javascript">
     function logout() {
       fetch('/logout', {

@@ -10,6 +10,7 @@ public class PostResponse {
 
 	private Long id;
 	private String categoryName;
+	private String categoryEngName;
 	private String title;
 	private String content;
 	private Long writerId;
@@ -19,10 +20,11 @@ public class PostResponse {
 	private Long viewCount;
 
 	@Builder
-	public PostResponse(Long id, String categoryName, String title, String content, Long writerId,
+	public PostResponse(Long id, String categoryName, String categoryEngName, String title, String content, Long writerId,
 		String writerName, LocalDateTime createAt, LocalDateTime updatedAt, Long viewCount) {
 		this.id = id;
 		this.categoryName = categoryName;
+		this.categoryEngName = categoryEngName;
 		this.title = title;
 		this.content = content;
 		this.writerId = writerId;
@@ -36,6 +38,7 @@ public class PostResponse {
 		return PostResponse.builder()
 			.id(post.getId())
 			.categoryName(post.getCategory().getCategoryType().getValue())
+			.categoryEngName(post.getCategory().getCategoryType().name().toLowerCase())
 			.title(post.getTitle())
 			.content(post.getContent())
 			.writerId(post.getWriter().getId())

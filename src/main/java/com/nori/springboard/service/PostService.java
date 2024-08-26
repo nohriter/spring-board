@@ -51,4 +51,11 @@ public class PostService {
 		return postRepository.findByCategory_CategoryType(categoryType, pageRequest)
 			.map(PostResponse::of);
 	}
+
+	public PostResponse getPost(Long postId) {
+		Post post = postRepository.findById(postId)
+			.orElseThrow(IllegalArgumentException::new);
+
+		return PostResponse.of(post);
+	}
 }
