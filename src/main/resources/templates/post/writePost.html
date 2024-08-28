@@ -30,12 +30,20 @@
               <textarea class="form-control" id="content" name="content" rows="6" required></textarea>
             </div>
             <input type="hidden" name="writerId" th:value="${memberId}">
-            <button type="submit" class="btn btn-primary">글쓰기 완료</button>
+            <button type="submit" class="btn btn-primary me-2">완료</button>
+            <button type="button" class="btn btn-primary" onclick="goBack()">취소</button>
           </form>
         </div>
       </div>
     </main>
 </div>
+
+
+<script th:inline="javascript">
+  function goBack() {
+    window.history.back();
+  }
+</script>
 <div th:insert="~{common/footer :: footer}"></div>
 </body>
 </html>

@@ -1,6 +1,7 @@
 package com.nori.springboard.controller;
 
 import com.nori.springboard.config.Login;
+import com.nori.springboard.service.CommentService;
 import com.nori.springboard.service.PostResponse;
 import com.nori.springboard.service.PostService;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,31 @@ public class PostController {
 		return "/post/writePost";
 	}
 
+	@GetMapping("/board/view/{postId}/update")
+	public String editPostForm(@Login Long memberId, @PathVariable Long postId, Model model) {
+		log.info("/board/view/{postId}/update");
+		PostResponse post = postService.getPost(postId);
+
+		postService.verifyPostOwner(memberId, post.getWriterId());
+
+		model.addAttribute("post", post);
+		model.addAttribute("category", post.getCategoryName());
+
+		return "/post/editPost";
+	}
+
+	@PostMapping("/board/{postId}/update")
+	public String editPost(@Login Long memberId, @PathVariable Long postId, @ModelAttribute PostRequest request,
+		RedirectAttributes redirectAttributes) {
+		log.info("/board/{postId}/update");
+
+		postService.updatePost(memberId, postId, request);
+
+		redirectAttributes.addAttribute("postId", postId);
+
+		return "redirect:/board/view/{postId}";
+	}
+
 	@GetMapping("/board/view")
 	public String getPosts(@RequestParam(value = "category", defaultValue = "all") String category,
 		@RequestParam(value = "page", defaultValue = "1") int pageNumber, Model model) {
@@ -42,8 +68,8 @@ public class PostController {
 		return "index";
 	}
 
-	@GetMapping("/board/view/{category}/{postId}")
-	public String getPosts(@PathVariable(value = "category") String category, @PathVariable Long postId, Model model) {
+	@GetMapping("/board/view/{postId}")
+	public String getPost(@PathVariable Long postId, Model model) {
 		log.info("/board/view/{postId}");
 		PostResponse post = postService.getPost(postId);
 
@@ -54,12 +80,12 @@ public class PostController {
 	}
 
 	@PostMapping("/board/write")
-	public String writePost(@Login Long memberId, @ModelAttribute PostWriteRequest request,  RedirectAttributes redirect) {
+	public String writePost(@Login Long memberId, @ModelAttribute PostRequest request,  RedirectAttributes redirect) {
 		PostResponse response = postService.postCreate(memberId, request);
 
 		redirect.addAttribute("postId", response.getId());
 
-		return "redirect:/posts/{postId}";
+		return "redirect:/board/view/{postId}";
 	}
 
 }

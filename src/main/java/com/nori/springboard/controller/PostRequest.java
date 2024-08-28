@@ -13,7 +13,7 @@ import lombok.ToString;
 @Setter
 @ToString
 @NoArgsConstructor
-public class PostWriteRequest {
+public class PostRequest {
 
 	private CategoryType categoryType;
 	private String title;

@@ -13,9 +13,9 @@
                     <div class="mb-3">
                         <label for="category" class="form-label">카테고리</label>
                         <select class="form-select" id="category" name="categoryType" readonly disabled>
-                            <option th:selected="${post.categoryName == '일반'}" value="general">일반</option>
-                            <option th:selected="${post.categoryName == '질문'}" value="question">질문</option>
-                            <option th:selected="${post.categoryName == '정보'}" value="information">정보</option>
+                            <option th:selected="${post.categoryName == '일반'}" value="GENERAL">일반</option>
+                            <option th:selected="${post.categoryName == '질문'}" value="QUESTION">질문</option>
+                            <option th:selected="${post.categoryName == '정보'}" value="INFORMATION">정보</option>
                         </select>
                     </div>
                     <div class="mb-3">
@@ -27,8 +27,8 @@
                         <textarea th:text="${post.content}" class="form-control" id="content" name="content" rows="6" readonly disabled></textarea>
                     </div>
                     <div th:if="${session.loginMember == post.writerId}" class="d-flex justify-content-start">
-                        <button th:onclick="|location.href='@{/posts/{postId}/update(postId=${post.id})}'|" type="button" class="btn btn-primary me-2">수정하기</button>
-                        <button type="submit" class="btn btn-primary">삭제하기</button>
+                        <button th:onclick="|location.href='@{/board/view/{postId}/update(postId=${post.id})}'|" type="button" class="btn btn-primary me-2">수정</button>
+                        <button type="submit" class="btn btn-primary">삭제</button>
                     </div>
                 </form>
             </div>

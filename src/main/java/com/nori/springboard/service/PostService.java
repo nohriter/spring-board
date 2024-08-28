@@ -1,6 +1,6 @@
 package com.nori.springboard.service;
 
-import com.nori.springboard.controller.PostWriteRequest;
+import com.nori.springboard.controller.PostRequest;
 import com.nori.springboard.entity.Category;
 import com.nori.springboard.entity.CategoryRepository;
 import com.nori.springboard.entity.CategoryType;
@@ -9,11 +9,14 @@ import com.nori.springboard.entity.MemberRepository;
 import com.nori.springboard.entity.Post;
 import com.nori.springboard.entity.PostRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PostService {
@@ -22,10 +25,8 @@ public class PostService {
 	private final CategoryRepository categoryRepository;
 	private final PostRepository postRepository;
 
-	public PostResponse postCreate(Long memberId, PostWriteRequest request) {
-		if(memberId != request.getWriterId()) {
-			throw new IllegalStateException("작성자가 다릅니다.");
-		}
+	public PostResponse postCreate(Long memberId, PostRequest request) {
+		verifyPostOwner(memberId, request.getWriterId());
 
 		Member writer = memberRepository.findById(memberId)
 			.orElseThrow(() -> new IllegalArgumentException());
@@ -55,6 +56,28 @@ public class PostService {
 	public PostResponse getPost(Long postId) {
 		Post post = postRepository.findById(postId)
 			.orElseThrow(IllegalArgumentException::new);
+
+		return PostResponse.of(post);
+	}
+
+	public void verifyPostOwner(Long memberId, Long writerId) {
+		if(!memberId.equals(writerId)) {
+			log.error("memberId: {}, writerId: {}", memberId, writerId);
+			throw new IllegalStateException("작성자가 다릅니다.");
+		}
+	}
+
+	@Transactional
+	public PostResponse updatePost(Long memberId, Long postId, PostRequest request) {
+		Category category = categoryRepository.findByCategoryType(request.getCategoryType())
+			.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 카테고입니다."));
+
+		Post post = postRepository.findById(postId)
+			.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글니다."));
+
+		verifyPostOwner(memberId, post.getWriter().getId());;
+
+		post.update(category, request.getTitle(), request.getContent());
 
 		return PostResponse.of(post);
 	}

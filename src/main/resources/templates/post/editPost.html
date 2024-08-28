@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:insert="~{common/head :: head}"></div>
+<body>
+<div class="container py-3">
+  <div th:insert="~{common/header :: header}"></div>
+
+  <main>
+    <!-- 글쓰기 폼 -->
+    <div class="row justify-content-center">
+      <div class="col-12 col-md-6">
+        <form th:action="@{/board/{postId}/update(postId=${post.id})}" method="post">
+          <div class="mb-3">
+            <label for="category" class="form-label">카테고리</label>
+            <select class="form-select" id="category" name="categoryType">
+              <option th:selected="${post.categoryName == '일반'}" value="GENERAL">일반</option>
+              <option th:selected="${post.categoryName == '질문'}" value="QUESTION">질문</option>
+              <option th:selected="${post.categoryName == '정보'}" value="INFORMATION">정보</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="title" class="form-label">제목</label>
+            <input th:value="${post.title}" type="text" class="form-control" id="title" name="title" >
+          </div>
+          <div class="mb-3">
+            <label for="content" class="form-label">내용</label>
+            <textarea th:text="${post.content}" class="form-control" id="content" name="content" rows="6" ></textarea>
+          </div>
+          <div th:if="${session.loginMember == post.writerId}" class="d-flex justify-content-start">
+            <button type="submit" class="btn btn-primary me-2">완료</button>
+            <button type="button" class="btn btn-primary" onclick="goBack()">취소</button>
+          </div>
+        </form>
+      </div>
+
+    </div>
+  </main>
+</div>
+<script th:inline="javascript">
+  function goBack() {
+    window.history.back();
+  }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</body>
+</html>
