@@ -22,37 +22,6 @@ public class PostController {
 
 	private final PostService postService;
 
-	@GetMapping("/board/write")
-	public String writePostForm(@Login Long memberId, Model model) {
-		model.addAttribute("memberId", memberId);
-		return "/post/writePost";
-	}
-
-	@GetMapping("/board/view/{postId}/update")
-	public String editPostForm(@Login Long memberId, @PathVariable Long postId, Model model) {
-		log.info("/board/view/{postId}/update");
-		PostResponse post = postService.getPost(postId);
-
-		postService.verifyPostOwner(memberId, post.getWriterId());
-
-		model.addAttribute("post", post)
-		model.addAttribute("category", post.getCategoryName());
-
-		return "/post/editPost";
-	}
-
-	@PostMapping("/board/{postId}/update")
-	public String editPost(@Login Long memberId, @PathVariable Long postId, @ModelAttribute PostRequest request,
-		RedirectAttributes redirectAttributes) {
-		log.info("/board/{postId}/update");
-
-		postService.updatePost(memberId, postId, request);
-
-		redirectAttributes.addAttribute("postId", postId);
-
-		return "redirect:/board/view/{postId}";
-	}
-
 	@GetMapping("/board/view")
 	public String getPosts(@RequestParam(value = "category", defaultValue = "all") String category,
 		@RequestParam(value = "page", defaultValue = "1") int pageNumber, Model model) {
@@ -69,13 +38,19 @@ public class PostController {
 
 	@GetMapping("/board/view/{postId}")
 	public String getPost(@PathVariable Long postId, Model model) {
-		log.info("/board/view/{postId}");
 		PostResponse post = postService.getPost(postId);
 
 		model.addAttribute("post", post);
 		model.addAttribute("category", post.getCategoryName());
 
 		return "/post/viewPost";
+	}
+
+	@GetMapping("/board/write")
+	public String writePostForm(@Login Long memberId, Model model) {
+		model.addAttribute("memberId", memberId);
+
+		return "/post/writePost";
 	}
 
 	@PostMapping("/board/write")
@@ -87,14 +62,34 @@ public class PostController {
 		return "redirect:/board/view/{postId}";
 	}
 
-	@PostMapping("/board/{postId}/delete")
-	public String editPost(@Login Long memberId, @PathVariable Long postId) {
-		log.info("/board/{postId}/delete");
+	@GetMapping("/board/view/{postId}/update")
+	public String editPostForm(@Login Long memberId, @PathVariable Long postId, Model model) {
+		PostResponse post = postService.getPost(postId);
 
+		postService.verifyPostOwner(memberId, post.getWriterId());
+
+		model.addAttribute("post", post);
+		model.addAttribute("category", post.getCategoryName());
+
+		return "/post/editPost";
+	}
+
+	@PostMapping("/board/{postId}/update")
+	public String editPost(@Login Long memberId, @PathVariable Long postId, @ModelAttribute PostRequest request,
+		RedirectAttributes redirectAttributes) {
+
+		postService.updatePost(memberId, postId, request);
+
+		redirectAttributes.addAttribute("postId", postId);
+
+		return "redirect:/board/view/{postId}";
+	}
+
+	@PostMapping("/board/{postId}/delete")
+	public String deletePost(@Login Long memberId, @PathVariable Long postId) {
 		postService.deletePost(memberId, postId);
 
 		return "redirect:/";
 	}
-
 
 }
