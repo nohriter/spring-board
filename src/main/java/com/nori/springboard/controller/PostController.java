@@ -1,7 +1,6 @@
 package com.nori.springboard.controller;
 
 import com.nori.springboard.config.Login;
-import com.nori.springboard.service.CommentService;
 import com.nori.springboard.service.PostResponse;
 import com.nori.springboard.service.PostService;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +35,7 @@ public class PostController {
 
 		postService.verifyPostOwner(memberId, post.getWriterId());
 
-		model.addAttribute("post", post);
+		model.addAttribute("post", post)
 		model.addAttribute("category", post.getCategoryName());
 
 		return "/post/editPost";
@@ -87,5 +86,15 @@ public class PostController {
 
 		return "redirect:/board/view/{postId}";
 	}
+
+	@PostMapping("/board/{postId}/delete")
+	public String editPost(@Login Long memberId, @PathVariable Long postId) {
+		log.info("/board/{postId}/delete");
+
+		postService.deletePost(memberId, postId);
+
+		return "redirect:/";
+	}
+
 
 }
