@@ -13,6 +13,7 @@ import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -45,6 +46,25 @@ public class Comment extends BaseEntity  {
 	@OneToMany(mappedBy = "parent")
 	private List<Comment> replies = new ArrayList<>();
 
+	private boolean isReply;
+
 	private boolean isDeleted;
 
+	private String parentNickname;
+
+	@Builder
+	private Comment(String content, Post post, Member writer, Comment parent,
+		String parentNickname, boolean isReply, List<Comment> replies) {
+		this.content = content;
+		this.post = post;
+		this.writer = writer;
+		this.parent = parent;
+		this.parentNickname = parentNickname;
+		this.isReply = isReply;
+		this.replies = replies;
+	}
+
+	public void delete() {
+		isDeleted = true;
+	}
 }

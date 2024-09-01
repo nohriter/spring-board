@@ -1,0 +1,317 @@
+<div th:fragment="commentList">
+
+  <!-- 댓글 목록 -->
+  <div class="row justify-content-center mt-5">
+    <div class="col-12 col-md-6 mb-2">
+      <h5 class="mb-1">댓글</h5>
+      <ul class="list-group mt-2">
+      </ul>
+    </div>
+  </div>
+  <!-- 댓글 목록 -->
+
+
+  <!-- 댓글 입력 폼 -->
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-6">
+      <form>
+        <div class="mb-3">
+          <textarea class="form-control" id="commentContent" name="content" rows="3" placeholder="댓글을 남겨보세요"></textarea>
+        </div>
+        <div class="d-flex justify-content-end">
+          <input type="hidden" id="postId" th:value="${post.id}" name="postId">
+          <input type="hidden" name="parentCommentId">
+          <button type="button" class="btn btn-sm btn-primary" onclick="addComment('', false)">등록</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <!-- 댓글 입력 폼 -->
+
+
+
+  <script th:inline="javascript">
+
+    const USER_ID = [[${session.loginMember}]];
+
+    $(document).ready(function(){
+      loadComments();
+    });
+
+    <!-- 댓글 폼 -->
+    // $('.reply-button') 클릭 이벤트 등록
+    $(document).on('click', '.reply-button', function() {
+      let replyItem = $(this).closest('.list-group-item');
+      let replyForm = replyItem.next('.reply-form');
+      let commentId = $(this).closest('[id^="comment-"]').attr('id').split('-')[1];
+
+      console.log("commentId : ", commentId);
+
+      // 다른 답글 폼을 숨깁니다.
+      $('.reply-form').not(replyForm).hide();
+
+      if (replyForm.length === 0) {
+        let replyFormHtml =
+            '<li class="list-group-item reply-form">' +
+              '<div class="row g-3">' +
+                '<div class="col">' +
+                  '<form id="replyForm">' +
+                    '<div class="mb-3">' +
+                      '<textarea class="form-control" id="replyCommentContent" name="replyCommentContent" rows="3" placeholder="댓글을 작성해주세요"></textarea>' +
+                    '</div>' +
+                    '<div class="d-flex justify-content-end">' +
+                      '<button type="button" onclick="addComment('+ commentId +', true)" class="btn btn-sm btn-primary">등록</button>' +
+                    '</div>' +
+                  '</form>' +
+                '</div>' +
+              '</div>' +
+            '</li>';
+
+        $(replyFormHtml).insertAfter(replyItem);
+      } else {
+        replyForm.toggle();
+      }
+    });
+    <!-- 댓글 폼 -->
+
+    <!-- 댓글 작성 -->
+    function addComment(commentId, isReply) {
+      const postId = $('#postId').val(); // 댓글을 작성할 게시글의 ID
+      const parentCommentId = commentId; // 답글을 작성할 댓글의 ID
+      let content = $('#commentContent').val(); // 입력된 댓글 내용 가져오기
+      if(isReply) {
+        content = $('#replyCommentContent').val();
+      }
+
+    // AJAX 요청을 보냄
+      $.ajax({
+        url: '/comments/add', // 댓글을 추가하는 엔드포인트 URL
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({
+        postId: postId,
+        content: content,
+        parentCommentId: parentCommentId,
+        isReply: isReply
+        }),
+        success: function(response) {
+          console.log('댓글이 성공적으로 작성되었습니다.');
+          $('#commentContent').val("");
+          loadComments();
+        },
+        error: function(xhr, status, error) {
+          console.error('Failed to add comment:', error);
+        }
+      });
+    }
+    <!-- 댓글 작성 -->
+
+    <!-- 댓글 로드 -->
+    function loadComments() {
+      console.log('start loadComments');
+      const requestData = {
+        "postId": [[${post.id}]]
+      };
+      $.ajax({
+        url: '/comments', // 댓글 목록을 불러오는 엔드포인트 URL
+        method: 'POST',
+        contentType: 'application/json', // JSON 형식으로 데이터를 보내기 위한 Content-Type 설정
+        data: JSON.stringify(requestData), // 데이터를 JSON 문자열로 변환하여 전송합니다.
+        success: function (comments) {
+          console.log('success loadComments');
+          // 댓글 목록을 받아와서 화면에 렌더링합니다.
+          renderComments(comments);
+        },
+        error: function (xhr, status, error) {
+          console.error('Failed to load comments:', error);
+        }
+      });
+    }
+    <!-- 댓글 로드 -->
+
+    <!-- 댓글 렌더링 -->
+    function renderComments(comments) {
+      let commentList = $('.list-group');
+
+      commentList.empty();
+
+      // 새로운 댓글 목록을 순회하면서 HTML을 생성하여 추가
+      $.each(comments, function(index, comment) {
+        let commentHtml = "";
+        let editDeleteButtonsHtml = ""
+        console.log("comments", comments);
+        console.log("comments", comments);
+
+        if(comment.deleted == true && !comment.isReply) {
+          commentHtml =
+              '<li class="list-group-item">' +
+                '삭제된 댓글입니다.' +
+              '</li>';
+          let allDeleted = true;
+
+          $.each(comment.replies, function(index, reply) {
+            console.log("reply.deleted", reply);
+            if (reply.deleted == false) {
+              allDeleted = false;
+            }
+          });
+          if(allDeleted) {
+            commentHtml = "";
+          }
+
+          // 댓글 목록에 추가
+          commentList.append(commentHtml);
+        } else {
+          let commentWriterId = comment.writerId; // 댓글 작성자의 ID
+
+          editDeleteButtonsHtml =
+              '<button type="button" id="updateComment-' + comment.id + ' " class="btn btn-sm btn-outline-primary me-2 update-comment">수정</button>' +
+              '<button type="button" onclick="deleteComment(' + comment.id + ')" class="btn btn-sm btn-outline-danger">삭제</button>';
+
+          commentHtml =
+              '<li class="list-group-item" id="comment-' + comment.id + '">' +
+              '<div class="row g-3">' +
+              '<div class="col">' +
+              '<div class="d-flex align-items-center">' +
+              '<span class="fw-bold me-2">' + comment.writerNickname + '</span>' +
+              '<span class="text-muted comment_info_date">' + comment.createdAt + '</span>' +
+              '</div>' +
+              '<p class="mb-0 mt-2">' + comment.content + '</p>' +
+              '<div class="editDeleteArea d-flex justify-content-end">' +
+              '<button href="#" class="reply-button btn btn-sm btn-outline-primary me-2">답글</button>' +
+              '</div>' +
+              '</div>' +
+              '</div>' +
+              '</li>';
+
+          // 댓글 목록에 추가
+          commentList.append(commentHtml);
+
+          if (USER_ID == commentWriterId) {
+            $('#comment-'+comment.id).find('.editDeleteArea').append(editDeleteButtonsHtml);
+          }
+        }
+
+        // 답글 목록을 렌더링
+        renderReplies(comment.replies, commentList, editDeleteButtonsHtml);
+      });
+    }
+    <!-- 댓글 렌더링 -->
+
+    <!-- 답글 렌더링 -->
+    function renderReplies(replies, parentElement, editDeleteButtonsHtml) {
+      // 답글을 순회하면서 HTML을 생성하여 추가
+      $.each(replies, function(index, reply) {
+        let replyWriterId = reply.writerId; // 댓글 작성자의 ID
+        let replyHtml = ""
+        if(reply.deleted == true) {
+
+        } else {
+          editDeleteButtonsHtml =
+              '<button type="button" onclick="updateComment(' + reply.id + ')" class="btn btn-sm btn-outline-primary me-2 update-comment">수정</button>' +
+              '<button type="button" onclick="deleteComment(' + reply.id + ')" class="btn btn-sm btn-outline-danger">삭제</button>';
+
+          let replyWriterNickname = '';
+
+          if(reply.parentsCommentNickname != null) {
+            replyWriterNickname = '<strong>' + reply.parentsCommentNickname + ' </strong>';
+          }
+
+          replyHtml =
+              '<li class="list-group-item bg-light" id="comment-' + reply.id + '">' +
+              '<div class="row g-3">' +
+              '<div class="col ps-4">' +
+              '<div class="d-flex align-items-center">' +
+              '<span class="fw-bold me-2">' + reply.writerNickname + '</span>' +
+              '<span class="text-muted comment_info_date">' + reply.createdAt + '</span>' +
+              '</div>' +
+              '<p class="mb-0 mt-2">' + replyWriterNickname  + reply.content + '</p>' +
+              '<div class="editDeleteArea d-flex justify-content-end">' +
+              '<button href="#" class="reply-button btn btn-sm btn-outline-primary me-2">답글</button>' +
+              '</div>' +
+              '</div>' +
+              '</div>' +
+              '</li>';
+
+          // 답글 목록에 추가
+          parentElement.append(replyHtml);
+
+          if (USER_ID == replyWriterId) {
+            $('#comment-'+reply.id).find('.editDeleteArea').append(editDeleteButtonsHtml);
+          }
+        }
+
+      });
+    }
+    <!-- 답글 렌더링 -->
+
+    <!-- 댓글 수정 -->
+    $(document).on('click', '.update-comment', function() {
+      let commentItem = $(this).closest('.list-group-item');
+      let commentId = commentItem.attr('id').split('-')[1];
+      let commentContent = commentItem.find('p').text().trim();
+
+      // 수정 폼 HTML 생성
+      let updateFormHtml =
+          '<div class="col-12 comment-update-form">' +
+          '<form id="commentForm-' + commentId + '">' +
+          '<div class="mb-3">' +
+          '<textarea class="form-control" id="updateCommentContent-' + commentId + '" name="updateCommentContent" rows="3" placeholder="댓글을 수정하세요">' + commentContent + '</textarea>' +
+          '</div>' +
+          '<div class="d-flex justify-content-end">' +
+          '<button type="button" class="btn btn-sm btn-primary" onclick="updateComment(' + commentId + ')">수정</button>' +
+          '<button type="button" class="btn btn-sm btn-secondary ms-2" onclick="cancelUpdate(' + commentId + ')">취소</button>' +
+          '</div>' +
+          '</form>' +
+          '</div>';
+
+      // 기존 댓글 내용을 수정 폼으로 교체
+      commentItem.html(updateFormHtml);
+    });
+
+    function updateComment(commentId) {
+      let updatedContent = $('#updateCommentContent-' + commentId).val();
+
+      // AJAX 요청으로 수정된 댓글을 서버에 전송
+      $.ajax({
+        url: '/comments/' + commentId + '/update', // 댓글을 수정하는 엔드포인트
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({
+          content: updatedContent
+        }),
+        success: function(response) {
+          console.log('댓글이 성공적으로 수정되었습니다.');
+          loadComments(); // 댓글 목록 새로 고침
+        },
+        error: function(xhr, status, error) {
+          console.error('Failed to update comment:', error);
+        }
+      });
+    }
+
+    function cancelUpdate(commentId) {
+      loadComments(); // 댓글 목록을 다시 로드하여 수정 취소
+    }
+    <!-- 댓글 수정 -->
+
+
+    <!-- 댓글 삭제 -->
+    function deleteComment(id) {
+      $.ajax({
+        url: "/comments/" + id + "/delete",
+        type: "POST", // 혹은 "DELETE"를 사용할 수도 있습니다.
+        success: function(response) {
+          console.log("댓글이 성공적으로 삭제되었습니다.", response);
+          location.reload();
+        },
+        error: function(xhr, status, error) {
+          console.log("댓글 삭제에 실패했습니다.");
+          // 여기에 삭제 실패 시의 추가 작업을 추가할 수 있습니다.
+        }
+      });
+    }
+    <!-- 댓글 삭제 -->
+  </script>
+
+</div>
