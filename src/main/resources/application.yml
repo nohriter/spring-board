@@ -1,23 +1,29 @@
+# 공통 설정
 spring:
   profiles:
     default: local
 
   datasource:
-    url: jdbc:h2:tcp://localhost/~/spring-board
-    driver-class-name: org.h2.Driver
-    username: sa
-    password:
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
     hibernate:
       ddl-auto: none
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
 
 ---
-
+# 로컬 환경 설정
 spring:
   config:
     activate:
       on-profile: local
+  datasource:
+    url: jdbc:mysql://localhost:3306/gesipan
+    username: developer
+    password: password
+
   jpa:
     hibernate:
       ddl-auto: create
@@ -25,7 +31,26 @@ spring:
     properties:
       hibernate:
         format_sql: true
-    defer-datasource-initialization: true # (2.5~) Hibernate 초기화 이후 data.sql 실행
+
+    defer-datasource-initialization: true
   sql:
     init:
-      mode: always # 항상 SQL 초기화 실행
+      mode: always
+
+---
+# 운영 환경 설정
+spring:
+  profiles: prod
+  datasource:
+    url: jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+  # 운영 환경에서는 스키마를 수정하지 않음
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+  logging:
+    level:
+      root: ERROR
