@@ -28,7 +28,7 @@ public class Comment extends BaseEntity  {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(nullable = false, length = 500)
+	@Column(nullable = false, length = 1000)
 	private String content;
 
 	@ManyToOne
@@ -66,5 +66,9 @@ public class Comment extends BaseEntity  {
 
 	public void delete() {
 		isDeleted = true;
+	}
+
+	public void editContent(String content) {
+		this.content = content;
 	}
 }

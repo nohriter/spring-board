@@ -1,5 +1,6 @@
 package com.nori.springboard.service;
 
+import com.nori.springboard.controller.CommentEditRequest;
 import com.nori.springboard.controller.CommentRequest;
 import com.nori.springboard.entity.Comment;
 import com.nori.springboard.entity.CommentRepository;
@@ -73,5 +74,35 @@ public class CommentService {
 	private Comment findParentsCommentById(Long commentId) {
 		return commentId == null ? null : commentRepository.findById(commentId)
 			.orElseThrow(() -> new NoSuchElementException("부모 댓글을 찾을 수 없습니다."));
+	}
+
+	@Transactional
+	public void editComment(Long memberId, CommentEditRequest request) {
+		Member member = memberRepository.findById(memberId)
+			.orElseThrow(() -> new NoSuchElementException());
+
+		Post post = postRepository.findById(request.getPostId())
+			.orElseThrow(() -> new NoSuchElementException());
+
+		Comment comment = commentRepository.findById(request.getCommentId())
+			.orElseThrow(() -> new NoSuchElementException());
+
+		verifyCommentOwner(memberId, comment.getWriter().getId());
+		verifyContent(request.getContent());
+
+		comment.editContent(request.getContent());
+	}
+
+	private void verifyCommentOwner(Long memberId, Long writerId) {
+		if (!memberId.equals(writerId)) {
+			log.error("memberId: {}, writerId: {}", memberId, writerId);
+			throw new IllegalStateException("작성자가 다릅니다.");
+		}
+	}
+
+	private void verifyContent(String content) {
+		if(content.length() > 1000) {
+			throw new IllegalArgumentException("댓글 길이 허용치 초과");
+		}
 	}
 }

@@ -208,7 +208,7 @@
 
         } else {
           editDeleteButtonsHtml =
-              '<button type="button" onclick="updateComment(' + reply.id + ')" class="btn btn-sm btn-outline-primary me-2 update-comment">수정</button>' +
+              '<button type="button" class="btn btn-sm btn-outline-primary me-2 update-comment">수정</button>' +
               '<button type="button" onclick="deleteComment(' + reply.id + ')" class="btn btn-sm btn-outline-danger">삭제</button>';
 
           let replyWriterNickname = '';
@@ -249,7 +249,9 @@
     $(document).on('click', '.update-comment', function() {
       let commentItem = $(this).closest('.list-group-item');
       let commentId = commentItem.attr('id').split('-')[1];
-      let commentContent = commentItem.find('p').text().trim();
+
+      // 댓글의 텍스트를 가져오고 strong 태그 내의 nickname을 제거
+      let commentContent = commentItem.find('p').clone().children('strong').remove().end().text().trim();
 
       // 수정 폼 HTML 생성
       let updateFormHtml =
@@ -271,15 +273,18 @@
 
     function updateComment(commentId) {
       let updatedContent = $('#updateCommentContent-' + commentId).val();
+      let postId = $('#postId').val();  // 게시글 ID를 가져옴
 
       // AJAX 요청으로 수정된 댓글을 서버에 전송
       $.ajax({
-        url: '/comments/' + commentId + '/update', // 댓글을 수정하는 엔드포인트
+        url: '/comments/' + commentId + '/edit', // 댓글을 수정하는 엔드포인트
         method: 'POST',
-        contentType: 'application/json',
-        data: JSON.stringify({
-          content: updatedContent
-        }),
+        contentType: 'application/x-www-form-urlencoded', // @ModelAttribute로 받기 때문에 Form Data 형식으로 전송
+        data: {
+          commentId: commentId,
+          content: updatedContent,
+          postId: postId
+        },
         success: function(response) {
           console.log('댓글이 성공적으로 수정되었습니다.');
           loadComments(); // 댓글 목록 새로 고침
