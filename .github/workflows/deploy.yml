@@ -39,7 +39,7 @@ jobs:
       - name: Push Docker Image to AWS ECR
         run: docker push ${{ secrets.ECR_REPOSITORY }}:latest
 
-      # SSH로 EC2 접속 및 배포 (ECR 로그인 추가)
+      # SSH로 EC2 접속 및 배포
       - name: Deploy to EC2
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
@@ -47,12 +47,9 @@ jobs:
           echo "$SSH_PRIVATE_KEY" > spring-gesipan.pem
           chmod 600 spring-gesipan.pem
           ssh -o StrictHostKeyChecking=no -i spring-gesipan.pem ec2-user@ec2-3-34-53-137.ap-northeast-2.compute.amazonaws.com << 'EOF'
-            # ECR 로그인
-            aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.ECR_REPOSITORY }}
-          
-            # Docker 컨테이너 업데이트
             docker pull ${{ secrets.ECR_REPOSITORY }}:latest
             docker stop spring-board || true
             docker rm spring-board || true
             docker run -d -e DB_HOST=${{ secrets.DB_HOST }} -e DB_PORT=${{ secrets.DB_PORT }} -e DB_NAME=${{ secrets.DB_NAME }} -e DB_USERNAME=${{ secrets.DB_USERNAME }} -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} -e KAKAO_CLIENT_ID=${{ secrets.KAKAO_CLIENT_ID }} -p 8080:8080 ${{ secrets.ECR_REPOSITORY }}:latest
           EOF
+      
