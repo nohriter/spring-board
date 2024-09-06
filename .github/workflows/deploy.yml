@@ -46,7 +46,7 @@ jobs:
         run: |
           echo "$SSH_PRIVATE_KEY" > spring-gesipan.pem
           chmod 600 spring-gesipan.pem
-          ssh -o StrictHostKeyChecking=no -i spring-gesipan.pem ec2-user@ec2-3-34-53-137.ap-northeast-2.compute.amazonaws.com << 'EOF'
+          ssh -o StrictHostKeyChecking=no -i spring-gesipan.pem ec2-43-201-206-137.ap-northeast-2.compute.amazonaws.com << 'EOF'
             
             aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.ECR_REPOSITORY }}
           
