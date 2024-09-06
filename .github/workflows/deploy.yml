@@ -49,7 +49,7 @@ jobs:
       # 8. EC2 서버에 SSH로 접속하여 배포
       - name: Deploy to EC2
         run: |
-          ssh -o StrictHostKeyChecking=no ec2-user@your-ec2-public-ip << 'EOF'
+          ssh -o StrictHostKeyChecking=no ec2-3-34-53-137.ap-northeast-2.compute.amazonaws.com << 'EOF'
             docker pull ${{ secrets.ECR_REPOSITORY }}:latest
             docker stop spring-board || true
             docker rm spring-board || true
