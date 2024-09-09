@@ -56,3 +56,9 @@ spring:
   logging:
     level:
       root: ERROR
+
+server:
+  servlet:
+    session:
+      tracking-modes: cookie  # 세션 추적 방식을 쿠키로만 설정
+      timeout: 300

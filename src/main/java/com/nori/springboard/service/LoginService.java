@@ -68,6 +68,7 @@ public class LoginService {
 
 	public void createSession(Long id, HttpServletRequest request) {
 		HttpSession session = request.getSession();
+
 		session.setAttribute(LOGIN_MEMBER, id);
 	}
 
