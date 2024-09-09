@@ -23,7 +23,7 @@ import org.springframework.web.client.RestTemplate;
 @RequiredArgsConstructor
 public class LoginService {
 
-	private static final String REDIRECT_URI 		  = "http://localhost:8080/login";
+	private static final String REDIRECT_URI 		  = "https://www.jhub.kr/login";
 	private static final String TOKEN_REQUEST_URI 	  = "https://kauth.kakao.com/oauth/token";
 	private static final String USER_INFO_REQUEST_URI = "https://kapi.kakao.com/v2/user/me";
 
