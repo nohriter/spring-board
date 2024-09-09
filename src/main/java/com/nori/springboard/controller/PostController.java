@@ -43,14 +43,14 @@ public class PostController {
 		model.addAttribute("post", post);
 		model.addAttribute("category", post.getCategoryName());
 
-		return "/post/viewPost";
+		return "post/viewPost";
 	}
 
 	@GetMapping("/board/write")
 	public String writePostForm(@Login Long memberId, Model model) {
 		model.addAttribute("memberId", memberId);
 
-		return "/post/writePost";
+		return "post/writePost";
 	}
 
 	@PostMapping("/board/write")
@@ -71,7 +71,7 @@ public class PostController {
 		model.addAttribute("post", post);
 		model.addAttribute("category", post.getCategoryName());
 
-		return "/post/editPost";
+		return "post/editPost";
 	}
 
 	@PostMapping("/board/{postId}/update")
