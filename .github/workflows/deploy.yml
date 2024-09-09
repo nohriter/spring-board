@@ -71,8 +71,6 @@ jobs:
               -p 8080:8080 \
               ${{ secrets.ECR_REPOSITORY }}:latest
 
-            # 로그 확인
-            docker logs -f spring-board
           EOF
 
 
