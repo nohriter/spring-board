@@ -47,7 +47,7 @@ jobs:
         run: |
           echo "$SSH_PRIVATE_KEY" > spring-gesipan.pem
           chmod 600 spring-gesipan.pem
-          ssh -o StrictHostKeyChecking=no -i spring-gesipan.pem ec2-user@$EC2_PRIVATE_IP \
+          ssh -t -o StrictHostKeyChecking=no -i spring-gesipan.pem ec2-user@$EC2_PRIVATE_IP \
             -o ProxyCommand="aws ec2-instance-connect open-tunnel --instance-id $INSTANCE_ID" << 'EOF'
           
               # ECR 로그인
