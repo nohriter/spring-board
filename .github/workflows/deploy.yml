@@ -44,7 +44,7 @@ jobs:
           EC2_INSTANCE_ID: ${{ secrets.EC2_INSTANCE_ID }}
         run: |
           # EC2 Instance Connect 명령어를 사용해 SSH로 접속
-          aws ec2-instance-connect ssh --instance-id $EC2_INSTANCE_ID << 'EOF'
+          aws ec2-instance-connect ssh --instance-id $EC2_INSTANCE_ID -t << 'EOF'
 
           # ECR 로그인
           aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.ECR_REPOSITORY }}
