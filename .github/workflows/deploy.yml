@@ -42,30 +42,40 @@ jobs:
       - name: Deploy to EC2 using EC2 Instance Connect
         env:
           EC2_INSTANCE_ID: ${{ secrets.EC2_INSTANCE_ID }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          EC2_PRIVATE_IP: ${{ secrets.EC2_PRIVATE_IP }}
         run: |
-          aws ec2-instance-connect ssh --instance-id $EC2_INSTANCE_ID --region ${{ secrets.AWS_REGION }} --instance-os-user ec2-user --command "bash -s" << 'EOF'
-          
-          # ECR 로그인
-          aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.ECR_REPOSITORY }}
-          
-          # 최신 이미지 가져오기
-          docker pull ${{ secrets.ECR_REPOSITORY }}:latest
-          
-          # 기존 컨테이너 중지 및 삭제
-          docker stop spring-board || true
-          docker rm spring-board || true
-          
-          # 새 컨테이너 실행
-          docker run -d \
-            --name spring-board \
-            -e DB_HOST=${{ secrets.DB_HOST }} \
-            -e DB_PORT=${{ secrets.DB_PORT }} \
-            -e DB_NAME=${{ secrets.DB_NAME }} \
-            -e DB_USERNAME=${{ secrets.DB_USERNAME }} \
-            -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
-            -e KAKAO_CLIENT_ID=${{ secrets.KAKAO_CLIENT_ID }} \
-            -e SPRING_PROFILES_ACTIVE=prod \
-            -p 8080:8080 \
-            ${{ secrets.ECR_REPOSITORY }}:latest
-          
+          # 퍼블릭 키 푸시
+          echo "$SSH_PRIVATE_KEY" > spring-board.pem
+          chmod 600 spring-board.pem
+          aws ec2-instance-connect send-ssh-public-key \
+            --instance-id $EC2_INSTANCE_ID \
+            --instance-os-user ec2-user \
+            --ssh-public-key file://spring-board.pem.pub \
+            --region ${{ secrets.AWS_REGION }}
+
+          # EC2 인스턴스에 SSH 접속 및 명령 실행
+          ssh -o "StrictHostKeyChecking=no" -i spring-board.pem ec2-user@$EC2_PRIVATE_IP << 'EOF'
+            # ECR 로그인
+            aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.ECR_REPOSITORY }}
+
+            # 최신 이미지 가져오기
+            docker pull ${{ secrets.ECR_REPOSITORY }}:latest
+
+            # 기존 컨테이너 중지 및 삭제
+            docker stop spring-board || true
+            docker rm spring-board || true
+
+            # 새 컨테이너 실행
+            docker run -d \
+              --name spring-board \
+              -e DB_HOST=${{ secrets.DB_HOST }} \
+              -e DB_PORT=${{ secrets.DB_PORT }} \
+              -e DB_NAME=${{ secrets.DB_NAME }} \
+              -e DB_USERNAME=${{ secrets.DB_USERNAME }} \
+              -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
+              -e KAKAO_CLIENT_ID=${{ secrets.KAKAO_CLIENT_ID }} \
+              -e SPRING_PROFILES_ACTIVE=prod \
+              -p 8080:8080 \
+              ${{ secrets.ECR_REPOSITORY }}:latest
           EOF
