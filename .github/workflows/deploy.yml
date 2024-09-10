@@ -43,8 +43,11 @@ jobs:
         env:
           EC2_INSTANCE_ID: ${{ secrets.EC2_INSTANCE_ID }}
         run: |
-          # EC2 Instance Connect 명령어를 사용해 SSH로 접속
-          aws ec2-instance-connect ssh --instance-id $EC2_INSTANCE_ID -t << 'EOF'
+          # EC2 Instance Connect를 사용해 SSH 접속
+          aws ec2-instance-connect ssh --instance-id $EC2_INSTANCE_ID --region ${{ secrets.AWS_REGION }}
+
+          # 이후 별도의 SSH 명령 실행
+          ssh -o "StrictHostKeyChecking=no" ec2-user@$EC2_PRIVATE_IP << 'EOF'
 
           # ECR 로그인
           aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.ECR_REPOSITORY }}
