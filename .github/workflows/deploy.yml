@@ -50,7 +50,7 @@ jobs:
           chmod 600 spring-gesipan.pem
 
           # EC2 Instance Connect를 사용해 SSH 연결
-          aws ec2-instance-connect ssh --instance-id $EC2_INSTANCE_ID --private-key-file spring-gesipan.pem --region ${{ secrets.AWS_REGION }} << 'EOF'
+          aws ec2-instance-connect ssh --instance-id $EC2_INSTANCE_ID --private-key-file spring-gesipan.pem --region ${{ secrets.AWS_REGION }} -t -o "StrictHostKeyChecking=no" << 'EOF'
 
               # ECR 로그인
               aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.ECR_REPOSITORY }}
