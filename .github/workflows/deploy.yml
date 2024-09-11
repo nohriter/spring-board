@@ -39,30 +39,25 @@ jobs:
       - name: Push Docker Image to AWS ECR
         run: docker push ${{ secrets.ECR_REPOSITORY }}:latest
 
-      - name: Deploy to EC2 using EC2 Instance Connect
+      # SSH로 EC2 접속 및 배포
+      - name: Deploy to EC2
         env:
-          EC2_INSTANCE_ID: ${{ secrets.EC2_INSTANCE_ID }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
         run: |
-          # EC2 Instance Connect 터널링을 통한 SSH 연결
-          aws ec2-instance-connect open-tunnel --instance-id $EC2_INSTANCE_ID --region ${{ secrets.AWS_REGION }} > ssh_tunnel
-
-          # SSH 연결에 필요한 IP 정보 추출
-          SSH_PROXY_COMMAND=$(cat ssh_tunnel | grep "ProxyCommand")
-          EC2_IP=$(aws ec2 describe-instances --instance-ids $EC2_INSTANCE_ID --query 'Reservations[*].Instances[*].PrivateIpAddress' --output text --region ${{ secrets.AWS_REGION }})
-
-          # SSH로 EC2에 연결 후 명령 실행
-          ssh -i ~/Documents/study/aws/spring-gesipan.pem -o "StrictHostKeyChecking=no" \
-          -o "$SSH_PROXY_COMMAND" ec2-user@$EC2_IP << 'EOF'
+          echo "$SSH_PRIVATE_KEY" > spring-gesipan.pem
+          chmod 600 spring-gesipan.pem
+          ssh -o StrictHostKeyChecking=no -i spring-gesipan.pem ec2-user@ec2-43-201-206-137.ap-northeast-2.compute.amazonaws.com << 'EOF'
+          
             # ECR 로그인
             aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.ECR_REPOSITORY }}
-
+          
             # 최신 이미지 가져오기
             docker pull ${{ secrets.ECR_REPOSITORY }}:latest
-
+          
             # 기존 컨테이너 중지 및 삭제
             docker stop spring-board || true
             docker rm spring-board || true
-
+          
             # 새 컨테이너 실행
             docker run -d \
               --name spring-board \
@@ -75,4 +70,5 @@ jobs:
               -e SPRING_PROFILES_ACTIVE=prod \
               -p 8080:8080 \
               ${{ secrets.ECR_REPOSITORY }}:latest
+
           EOF
