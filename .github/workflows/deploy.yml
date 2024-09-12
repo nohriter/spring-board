@@ -64,7 +64,7 @@ jobs:
                 -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
                 -e KAKAO_CLIENT_ID=${{ secrets.KAKAO_CLIENT_ID }} \
                 -e SPRING_PROFILES_ACTIVE=prod \
-                -p 8080:8080 \
+                -p 80:80 \
                 ${{ secrets.ECR_REPOSITORY }}:latest
 
           EOF
