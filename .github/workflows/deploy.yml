@@ -45,6 +45,7 @@ jobs:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }} # AWS_ACCOUNT_ID 추가
           AWS_REGION: "ap-northeast-2"
         run: |
           echo "$SSH_PRIVATE_KEY" | tr -d '\r' > spring-gesipan.pem
@@ -55,10 +56,15 @@ jobs:
           "export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} && \
            export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} && \
            export AWS_REGION=${AWS_REGION} && \
+           echo 'Logging into AWS ECR' && \
            aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.$AWS_REGION.amazonaws.com && \
+           echo 'Pulling Docker image' && \
            docker pull ${AWS_ACCOUNT_ID}.dkr.ecr.$AWS_REGION.amazonaws.com/${{ secrets.ECR_REPOSITORY }}:latest && \
+           echo 'Stopping existing container' && \
            docker stop spring-board || true && \
+           echo 'Removing existing container' && \
            docker rm spring-board || true && \
+           echo 'Running new container' && \
            docker run -d --name spring-board \
            -e DB_HOST=${{ secrets.DB_HOST }} \
            -e DB_PORT=${{ secrets.DB_PORT }} \
@@ -68,6 +74,7 @@ jobs:
            -e KAKAO_CLIENT_ID=${{ secrets.KAKAO_CLIENT_ID }} \
            -e SPRING_PROFILES_ACTIVE=prod \
            -p 80:8080 ${AWS_ACCOUNT_ID}.dkr.ecr.$AWS_REGION.amazonaws.com/${{ secrets.ECR_REPOSITORY }}:latest && \
+           echo 'Cleaning up old Docker images' && \
            docker images -q ${AWS_ACCOUNT_ID}.dkr.ecr.$AWS_REGION.amazonaws.com/${{ secrets.ECR_REPOSITORY }} | tail -n +3 | xargs -r docker rmi"
       
       
