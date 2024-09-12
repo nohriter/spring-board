@@ -68,6 +68,6 @@ jobs:
               ${{ secrets.ECR_REPOSITORY }}:latest
 
             # 최근 2개 이미지만 남기고 나머지 삭제
-            docker images -q ${{ secrets.ECR_REPOSITORY }} | tail -n +2 | xargs -r docker rmi
+            docker images -q ${{ secrets.ECR_REPOSITORY }} | tail -n +3 | xargs -r docker rmi
 
           EOF
