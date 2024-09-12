@@ -43,21 +43,45 @@ jobs:
       - name: Deploy to EC2
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
         run: |
-          echo "$SSH_PRIVATE_KEY" > spring-gesipan.pem
+          # 줄 바꿈 문제 해결을 위해 tr 사용
+          echo "$SSH_PRIVATE_KEY" | tr -d '\r' > spring-gesipan.pem
           chmod 600 spring-gesipan.pem
-          ssh -o StrictHostKeyChecking=no -i spring-gesipan.pem ec2-13-209-251-172.ap-northeast-2.compute.amazonaws.com << 'EOF'
-          
-            aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.ECR_REPOSITORY }}
-          
-            docker pull ${{ secrets.ECR_REPOSITORY }}:latest
+
+          # SSH 비대화형 연결
+          ssh -t -o StrictHostKeyChecking=no -i spring-gesipan.pem ec2-user@ec2-13-209-251-172.ap-northeast-2.compute.amazonaws.com << 'EOF'
+
+            # AWS 자격 증명 및 리전 설정
+            export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+            export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+            export AWS_REGION=${AWS_REGION}
+
+            # AWS ECR 로그인 (토큰 갱신)
+            aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.$AWS_REGION.amazonaws.com
+
+            # 도커 이미지 풀
+            docker pull ${AWS_ACCOUNT_ID}.dkr.ecr.$AWS_REGION.amazonaws.com/${{ secrets.ECR_REPOSITORY }}:latest
             docker stop spring-board || true
             docker rm spring-board || true
-            docker run -d -e DB_HOST=${{ secrets.DB_HOST }} -e DB_PORT=${{ secrets.DB_PORT }} -e DB_NAME=${{ secrets.DB_NAME }} -e DB_USERNAME=${{ secrets.DB_USERNAME }} -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} -e KAKAO_CLIENT_ID=${{ secrets.KAKAO_CLIENT_ID }} -p 80:8080 ${{ secrets.ECR_REPOSITORY }}:latest
-          EOF          
-          
-          
+
+            # 새 컨테이너 실행
+            docker run -d \
+              --name spring-board \
+              -e DB_HOST=${{ secrets.DB_HOST }} \
+              -e DB_PORT=${{ secrets.DB_PORT }} \
+              -e DB_NAME=${{ secrets.DB_NAME }} \
+              -e DB_USERNAME=${{ secrets.DB_USERNAME }} \
+              -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
+              -e KAKAO_CLIENT_ID=${{ secrets.KAKAO_CLIENT_ID }} \
+              -e SPRING_PROFILES_ACTIVE=prod \
+              -p 80:8080 \
+              ${AWS_ACCOUNT_ID}.dkr.ecr.$AWS_REGION.amazonaws.com/${{ secrets.ECR_REPOSITORY }}:latest
+
             # 최근 2개 이미지만 남기고 나머지 삭제
-            docker images -q ${{ secrets.ECR_REPOSITORY }} | tail -n +3 | xargs -r docker rmi
+            docker images -q ${AWS_ACCOUNT_ID}.dkr.ecr.$AWS_REGION.amazonaws.com/${{ secrets.ECR_REPOSITORY }} | tail -n +3 | xargs -r docker rmi
 
           EOF
+      
