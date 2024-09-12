@@ -48,15 +48,20 @@ jobs:
           chmod 600 spring-gesipan.pem
           ssh -o StrictHostKeyChecking=no -i spring-gesipan.pem ec2-user@ec2-13-209-251-172.ap-northeast-2.compute.amazonaws.com << 'EOF'
           
+            # AWS ECR 인증 갱신
             aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.ECR_REPOSITORY }}
-          
+
+            # 최신 이미지 가져오기
             docker pull ${{ secrets.ECR_REPOSITORY }}:latest
+
+            # 기존 컨테이너 중지 및 삭제
             docker stop spring-board || true
             docker rm spring-board || true
-          
+
             # 새 컨테이너 실행
             docker run -d \
               --name spring-board \
+              --restart unless-stopped \
               -e DB_HOST=${{ secrets.DB_HOST }} \
               -e DB_PORT=${{ secrets.DB_PORT }} \
               -e DB_NAME=${{ secrets.DB_NAME }} \
