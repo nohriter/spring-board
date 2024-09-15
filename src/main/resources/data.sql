@@ -2,8 +2,7 @@ INSERT INTO member (login_id, nickname, is_deleted)
 VALUES
     ('nohri@gmail.com','노리', false),
     ('abc@gmail.com','홍길동', false),
-    ('pepepe@gmail.com', '손흥민', false),
-    ('4007068@naver.com', '손흥민', false);
+    ('pepepe@gmail.com', '손흥민', false);
 
 INSERT INTO category (category_type)
 VALUES ('general');
