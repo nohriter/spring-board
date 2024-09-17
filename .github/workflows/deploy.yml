@@ -65,8 +65,8 @@ jobs:
             -e DB_USERNAME=${{ secrets.DB_USERNAME }} \
             -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
             -e KAKAO_CLIENT_ID=${{ secrets.KAKAO_CLIENT_ID }} \
-            -e SPRING_MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }} \
-            -e SPRING_MAIL_USERNAME=${{ secrets.MAIL_USERNAME }} \
+            -e SPRING_MAIL_PASSWORD=${{ secrets.SPRING_MAIL_PASSWORD }} \
+            -e SPRING_MAIL_USERNAME=${{ secrets.SPRING_MAIL_USERNAME }} \
             -e SPRING_PROFILES_ACTIVE=prod \
             -p 80:8080 \
             ${{ secrets.ECR_REPOSITORY }}:latest
