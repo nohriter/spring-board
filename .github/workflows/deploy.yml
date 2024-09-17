@@ -58,18 +58,19 @@ jobs:
             
             # 새 컨테이너 실행
             docker run -d \
-              --name spring-board \
-              -e DB_HOST=${{ secrets.DB_HOST }} \
-              -e DB_PORT=${{ secrets.DB_PORT }} \
-              -e DB_NAME=${{ secrets.DB_NAME }} \
-              -e DB_USERNAME=${{ secrets.DB_USERNAME }} \
-              -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
-              -e KAKAO_CLIENT_ID=${{ secrets.KAKAO_CLIENT_ID }} \
-              -e spring.mail.password=${{ secrets.MAIL_PASSWORD }} \
-              -e spring.mail.username=${{ secrets.MAIL_USERNAME }} \
-              -e SPRING_PROFILES_ACTIVE=prod \
-              -p 80:8080 \
-              ${{ secrets.ECR_REPOSITORY }}:latest
+            --name spring-board \
+            -e DB_HOST=${{ secrets.DB_HOST }} \
+            -e DB_PORT=${{ secrets.DB_PORT }} \
+            -e DB_NAME=${{ secrets.DB_NAME }} \
+            -e DB_USERNAME=${{ secrets.DB_USERNAME }} \
+            -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
+            -e KAKAO_CLIENT_ID=${{ secrets.KAKAO_CLIENT_ID }} \
+            -e SPRING_MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }} \
+            -e SPRING_MAIL_USERNAME=${{ secrets.MAIL_USERNAME }} \
+            -e SPRING_PROFILES_ACTIVE=prod \
+            -p 80:8080 \
+            ${{ secrets.ECR_REPOSITORY }}:latest
+
 
             # 최근 2개 이미지만 남기고 나머지 삭제
             docker images -q ${{ secrets.ECR_REPOSITORY }} | tail -n +3 | xargs -r docker rmi
