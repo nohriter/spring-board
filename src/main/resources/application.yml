@@ -72,13 +72,6 @@ spring:
   logging:
     level:
       root: ERROR
-
-server:
-  servlet:
-    session:
-      tracking-modes: cookie  # 세션 추적 방식을 쿠키로만 설정
-      timeout: 300
-
   mail:
     host: smtp.gmail.com
     port: 587
@@ -90,3 +83,9 @@ server:
           auth: true
           starttls:
             enable: true
+
+server:
+  servlet:
+    session:
+      tracking-modes: cookie  # 세션 추적 방식을 쿠키로만 설정
+      timeout: 300
