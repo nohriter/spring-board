@@ -41,3 +41,17 @@
   background-color: #f2f2f2 !important;
 }
 
+ .form-container {
+   max-width: 300px; /* 가로 길이를 절반으로 줄이기 */
+   margin: 0 auto; /* 가로 중앙 정렬 */
+ }
+/* 이메일 입력 폼과 버튼을 숨기는 초기 스타일 */
+#resendEmailForm {
+  display: none;
+}
+/* 오류 메시지 스타일 */
+.error-message {
+  color: red;
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+}

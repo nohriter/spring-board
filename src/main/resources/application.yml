@@ -27,7 +27,6 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create
-    show-sql: true
     properties:
       hibernate:
         format_sql: true
@@ -36,6 +35,23 @@ spring:
   sql:
     init:
       mode: always
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: your-email@gmail.com
+    password: your-email-password
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+logging.level:
+  org.hibernate.SQL: debug
+# org.hibernate.type: trace
+
 
 ---
 # 운영 환경 설정
@@ -51,7 +67,7 @@ spring:
   # 운영 환경에서는 스키마를 수정하지 않음
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: create
     show-sql: false
   logging:
     level:
@@ -62,3 +78,15 @@ server:
     session:
       tracking-modes: cookie  # 세션 추적 방식을 쿠키로만 설정
       timeout: 300
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true

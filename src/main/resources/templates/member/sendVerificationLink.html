@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <div th:insert="~{common/head :: head}"></div>
+  <style>
+    .form-container {
+      max-width: 300px; /* 가로 길이를 절반으로 줄이기 */
+      margin: 0 auto; /* 가로 중앙 정렬 */
+    }
+  </style>
+</head>
+<body>
+<div class="container d-flex justify-content-center align-items-center min-vh-100">
+  <main class="w-100 form-container">
+    <div class="row justify-content-center">
+      <div class="col-12">
+        <h2 class="text-center mb-4">인증 메일을 보냈어요.</h2>
+        <p class="text-center">
+          메일함을 확인해 주세요. <br>
+          가입하신 이메일을 인증해 주시면, <br>
+          서비스를 마음껏 이용하실 수 있어요.
+        </p>
+        <button type="button" class="btn btn-primary w-100" onclick="goHome()">메인 페이지로 돌아가기</button>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script th:inline="javascript">
+  function goHome() {
+    window.location.href = "/board/view?category=all&page=1";
+  }
+</script>
+</body>
+</html>

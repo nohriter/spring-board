@@ -2,7 +2,6 @@ package com.nori.springboard.config;
 
 import static com.nori.springboard.config.SessionConst.*;
 
-import com.nori.springboard.service.LoginService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
