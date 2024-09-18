@@ -35,7 +35,7 @@ import org.springframework.web.client.RestTemplate;
 @Transactional
 public class LoginService {
 
-	private static final String REDIRECT_URI  = "http://www.jhub.kr/login";
+	private static final String REDIRECT_URI  = "http://www.jhub.kr/kakao-login";
 	private static final String TOKEN_REQUEST_URI = "https://kauth.kakao.com/oauth/token";
 	private static final String USER_INFO_REQUEST_URI = "https://kapi.kakao.com/v2/user/me";
 	private static final String KAKAO = "KAKAO_";
