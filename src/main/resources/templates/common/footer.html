@@ -42,13 +42,6 @@
       });
     });
 
-    // 카카오 로그인 버튼 클릭 시 새 창으로 열기
-    $('#kakaoLoginBtn').click(function(event) {
-      event.preventDefault();
-      var kakaoUrl = $(this).attr('href');
-      window.open(kakaoUrl, '_blank', 'width=500, height=600');
-    });
-
     // 이메일 유효성 검증 함수
     function validateEmail(email) {
       var emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
