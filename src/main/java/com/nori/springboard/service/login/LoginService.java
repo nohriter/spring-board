@@ -14,7 +14,7 @@ import com.nori.springboard.exception.ExpiredTokenException;
 import com.nori.springboard.exception.InvalidParameterException;
 import com.nori.springboard.exception.InvalidLoginInfoException;
 import com.nori.springboard.exception.NotVerifyEmailException;
-import com.nori.springboard.service.email.EmailVerificationToken;
+import com.nori.springboard.entity.login.EmailVerificationToken;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;

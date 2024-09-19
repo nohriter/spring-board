@@ -1,4 +1,4 @@
-package com.nori.springboard.service.email;
+package com.nori.springboard.entity.login;
 
 import com.nori.springboard.entity.member.Member;
 import jakarta.persistence.Column;
@@ -6,6 +6,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
@@ -28,6 +29,7 @@ public class EmailVerificationToken {
 	private Long id;
 
 	@OneToOne
+	@JoinColumn(name = "member_id")
 	private Member member;  // 회원과 연결
 
 	private String token;
