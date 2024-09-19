@@ -9,13 +9,13 @@
     <!-- 글쓰기 폼 -->
     <div class="row justify-content-center">
       <div class="col-12 col-md-6">
-        <form th:action="@{/board/{postId}/update(postId=${post.id})}" method="post">
+        <form th:action="@{/board/{postId}/modify(postId=${post.id})}" method="post">
           <div class="mb-3">
             <label for="category" class="form-label">카테고리</label>
             <select class="form-select" id="category" name="categoryType">
-              <option th:selected="${post.categoryName == '일반'}" value="GENERAL">일반</option>
-              <option th:selected="${post.categoryName == '질문'}" value="QUESTION">질문</option>
-              <option th:selected="${post.categoryName == '정보'}" value="INFORMATION">정보</option>
+              <th:block th:each="category : ${categories}">
+                <option th:value="${category.name}" th:text="${category.displayName}"></option>
+              </th:block>
             </select>
           </div>
           <div class="mb-3">
@@ -30,6 +30,7 @@
             <button type="submit" class="btn btn-primary me-2">완료</button>
             <button type="button" class="btn btn-primary" onclick="goBack()">취소</button>
           </div>
+          <input type="hidden" name="boardTitle" th:value="${boardTitle}">
         </form>
       </div>
 

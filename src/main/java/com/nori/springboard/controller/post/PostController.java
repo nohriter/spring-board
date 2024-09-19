@@ -91,27 +91,31 @@ public class PostController {
 		return "redirect:/board/view/{postId}";
 	}
 
-	@GetMapping("/board/view/{postId}/update")
-	public String editPostForm(@Login Long memberId, @PathVariable Long postId, Model model) {
+	@GetMapping("/board/modify/{postId}")
+	public String editPostForm(@Login Long memberId, @RequestParam(value = "id") String boardTitle,
+		@PathVariable Long postId, Model model) {
 		PostResponse post = postService.getPost(postId);
 
 		postService.verifyPostOwner(memberId, post.getWriterId());
+		List<CategoryResponse> categories = categoryService.getCategoriesByBoard(boardTitle);
 
+		model.addAttribute("boardTitle", boardTitle);
 		model.addAttribute("post", post);
-		model.addAttribute("category", post.getCategoryName());
+		model.addAttribute("categories", categories);
 
 		return "post/editPost";
 	}
 
-	@PostMapping("/board/{postId}/update")
+	@PostMapping("/board/{postId}/modify")
 	public String editPost(@Login Long memberId, @PathVariable Long postId, @ModelAttribute PostRequest request,
 		RedirectAttributes redirectAttributes) {
 
 		postService.updatePost(memberId, postId, request);
 
 		redirectAttributes.addAttribute("postId", postId);
+		redirectAttributes.addAttribute("boardTitle", request.getBoardTitle());
 
-		return "redirect:/board/view/{postId}";
+		return "redirect:/board/view/{postId}?id={boardTitle}";
 	}
 
 	@PostMapping("/board/{postId}/delete")
