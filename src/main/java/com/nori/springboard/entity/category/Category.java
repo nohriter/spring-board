@@ -2,6 +2,7 @@ package com.nori.springboard.entity.category;
 
 
 import com.nori.springboard.entity.BaseEntity;
+import com.nori.springboard.entity.board.Board;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -9,6 +10,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -28,5 +31,9 @@ public class Category extends BaseEntity {
 	@Column(nullable = false, length = 20)
 	@Enumerated(EnumType.STRING)
 	private CategoryType categoryType;
+
+	@ManyToOne
+	@JoinColumn(name = "board_id")
+	private Board board;
 
 }

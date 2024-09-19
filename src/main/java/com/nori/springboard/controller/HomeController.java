@@ -9,7 +9,7 @@ public class HomeController {
 
 	@GetMapping("/")
 	public String home() {
-		return "redirect:/board/view?category=all&page=1";
+		return "redirect:/board/lists";
 	}
 
 	@ResponseBody

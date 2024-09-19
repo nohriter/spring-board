@@ -19,6 +19,7 @@ spring:
   config:
     activate:
       on-profile: local
+
   datasource:
     url: jdbc:mysql://localhost:3306/gesipan
     username: developer
@@ -30,8 +31,9 @@ spring:
     properties:
       hibernate:
         format_sql: true
-
+        show_sql: true
     defer-datasource-initialization: true
+
   sql:
     init:
       mode: always
@@ -52,6 +54,9 @@ logging.level:
   org.hibernate.SQL: debug
 # org.hibernate.type: trace
 
+app:
+  domain: http://localhost:8080
+
 ---
 # 운영 환경 설정
 spring:
@@ -67,11 +72,8 @@ spring:
   # 운영 환경에서는 스키마를 수정하지 않음
   jpa:
     hibernate:
-      ddl-auto: create
-    show-sql: false
-  logging:
-    level:
-      root: ERROR
+      ddl-auto: update
+    defer-datasource-initialization: true
 
   mail:
     host: smtp.gmail.com
@@ -90,3 +92,6 @@ server:
     session:
       tracking-modes: cookie  # 세션 추적 방식을 쿠키로만 설정
       timeout: 300
+
+app:
+  domain: http://jhub.kr

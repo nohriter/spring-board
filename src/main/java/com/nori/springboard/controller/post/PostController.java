@@ -1,14 +1,22 @@
 package com.nori.springboard.controller.post;
 
 import com.nori.springboard.config.Login;
+import com.nori.springboard.entity.category.CategoryRepository;
+import com.nori.springboard.entity.category.CategoryType;
+import com.nori.springboard.service.category.CategoryResponse;
+import com.nori.springboard.service.category.CategoryService;
 import com.nori.springboard.service.post.PostResponse;
 import com.nori.springboard.service.post.PostService;
+import java.beans.PropertyEditorSupport;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,25 +29,42 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class PostController {
 
 	private final PostService postService;
+	private final CategoryService categoryService;
 
-	@GetMapping("/board/view")
-	public String getPosts(@RequestParam(value = "category", defaultValue = "all") String category,
+	@InitBinder
+	public void initBinder(WebDataBinder binder) {
+		binder.registerCustomEditor(CategoryType.class, new PropertyEditorSupport() {
+			@Override
+			public void setAsText(String text) {
+				setValue(CategoryType.of(text));  // 대소문자 구분 없이 처리
+			}
+		});
+	}
+
+	@GetMapping("/board/lists")
+	public String getPosts(@RequestParam(value = "id", defaultValue = "free") String boardTitle,
+		@RequestParam(value = "category", defaultValue = "all") String category,
 		@RequestParam(value = "page", defaultValue = "1") int pageNumber, Model model) {
-		Page<PostResponse> posts = postService.getPostPages(category, pageNumber);
+
+		Page<PostResponse> posts = postService.getPostPages(boardTitle, category, pageNumber);
+		List<CategoryResponse> categories = categoryService.getCategoriesByBoard(boardTitle); // 게시판에 따른 카테고리 가져오기
 
 		int totalPages = posts.getTotalPages();
 
 		model.addAttribute("posts", posts);
 		model.addAttribute("category", category);
+		model.addAttribute("boardTitle", boardTitle);
 		model.addAttribute("totalPages", totalPages);
+		model.addAttribute("categories", categories);
 
 		return "index";
 	}
 
 	@GetMapping("/board/view/{postId}")
-	public String getPost(@PathVariable Long postId, Model model) {
+	public String getPost(@RequestParam(value = "id") String boardTitle, @PathVariable Long postId, Model model) {
 		PostResponse post = postService.getPost(postId);
 
+		model.addAttribute("boardTitle", boardTitle);
 		model.addAttribute("post", post);
 		model.addAttribute("category", post.getCategoryName());
 
@@ -47,8 +72,13 @@ public class PostController {
 	}
 
 	@GetMapping("/board/write")
-	public String writePostForm(@Login Long memberId, Model model) {
+	public String writePostForm(@Login Long memberId, @RequestParam(value = "id") String boardTitle, Model model) {
+		List<CategoryResponse> categories = categoryService.getCategoriesByBoard(boardTitle);
+
 		model.addAttribute("memberId", memberId);
+		model.addAttribute("categories", categories);
+		model.addAttribute("boardTitle", boardTitle);
+
 		return "post/writePost";
 	}
 

@@ -20,10 +20,10 @@ public class WebConfig implements WebMvcConfigurer {
 	public void addInterceptors(InterceptorRegistry registry) {
 		registry.addInterceptor(new LoginCheckInterceptor())
 			.addPathPatterns("/**")
-			.excludePathPatterns("/", "/login", "/logout", "/board/view/**", "/comments", "/healthcheck",
+			.excludePathPatterns("/", "/login", "/logout", "/board/view/**", "/board/lists/**", "/comments",
 				"/images/**", "/signup", "/resend-verification", "/verify-email",
 				"/find-password", "/update-password", "/kakao-login",
-				"/error", "/favicon.ico", "/css/styles.css")
+				"/healthcheck", "/error", "/favicon.ico", "/css/styles.css")
 			.order(1);
 	}
 

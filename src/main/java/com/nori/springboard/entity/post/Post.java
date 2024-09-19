@@ -2,6 +2,7 @@ package com.nori.springboard.entity.post;
 
 
 import com.nori.springboard.entity.BaseEntity;
+import com.nori.springboard.entity.board.Board;
 import com.nori.springboard.entity.category.Category;
 import com.nori.springboard.entity.member.Member;
 import jakarta.persistence.Column;
@@ -37,6 +38,10 @@ public class Post extends BaseEntity {
 	private long viewCount;
 
 	@ManyToOne
+	@JoinColumn(name = "board_id")
+	private Board board;
+
+	@ManyToOne
 	@JoinColumn(name = "category_id")
 	private Category category;
 
@@ -47,9 +52,11 @@ public class Post extends BaseEntity {
 	private boolean isDeleted;
 
 	@Builder
-	public Post(String title, String content, Category category, Member writer) {
+	private Post(String title, String content, Board board, Category category,
+		Member writer) {
 		this.title = title;
 		this.content = content;
+		this.board = board;
 		this.category = category;
 		this.writer = writer;
 	}

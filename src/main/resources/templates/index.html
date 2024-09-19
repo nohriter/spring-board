@@ -6,9 +6,28 @@
     <th:block th:insert="~{common/header :: header}"></th:block>
 </div>
 
-<main>
+<main class="container">
+
+    <!-- 카테고리 선택 메뉴 -->
+    <div class="py-2">
+        <div class="d-flex mb-1 justify-content-center">
+            <div class="btn-group" role="group">
+                <a th:href="'/board/lists?id=' + ${boardTitle} + '&category=all&page=1'"
+                   th:classappend="${category == 'all'} ? 'btn-dark' : 'btn-light'"
+                   class="btn border">전체글</a>
+
+                <!-- 동적으로 카테고리 목록을 렌더링 -->
+                <th:block th:each="cat : ${categories}">
+                    <a th:href="'/board/lists?id=' + ${boardTitle} + '&category=' + ${cat.name} + '&page=1'"
+                       th:classappend="${category == cat.name} ? 'btn-dark' : 'btn-light'"
+                       class="btn border" th:text="${cat.displayName}">카테고리</a>
+                </th:block>
+            </div>
+        </div>
+    </div>
+
     <!--start 글 목록 출력-->
-    <div class="container py-3 table-responsive">
+    <div class="table-responsive">
         <table class="table table-custom text-center">
             <thead>
             <tr>
@@ -26,7 +45,7 @@
                 <th scope="row" th:text="${post.id}">1</th>
                 <td th:text="${post.categoryName}">Mark</td>
                 <td>
-                    <a th:href="'/board/view/' + ${post.id}" th:text="${post.title}"></a>
+                    <a th:href="'/board/view/' + ${post.id} + '?id=' + ${boardTitle}" th:text="${post.title}"></a>
                 </td>
                 <td th:text="${post.writerName}">@mdo</td>
                 <td th:text="${post.createAt}">@mdo</td>
@@ -42,9 +61,7 @@
     <div class="mb-5">
         <!--페이징-->
         <nav class="pagination justify-content-center text-center mb-3">
-
             <ul class="pagination">
-
                 <!-- 페이지 번호 생성 -->
                 <th:block th:if="${totalPages > 0}">
                     <th:block th:with="
@@ -83,9 +100,7 @@
                         </li>
                     </th:block>
                 </th:block>
-
             </ul>
-
         </nav>
         <!--페이징-->
 
@@ -115,35 +130,19 @@
         <!--검색-->
     </div>
 </main>
-<script th:inline="javascript">
 
+<div th:insert="~{common/footer :: footer}"></div>
+
+<script th:inline="javascript">
   const currentPage = [[${posts.number}]] + 1;
   const totalPages = [[${totalPages}]];
   const category = [[${category}]];
+  const boardTitle = [[${boardTitle}]];
 
-  // 이전 페이지로 이동하는 함수
-  function previousPage() {
-    if (currentPage > 1) {
-      goToPage(currentPage - 1);
-    }
-  }
-
-  // 다음 페이지로 이동하는 함수
-  function nextPage() {
-    if (currentPage < totalPages) {
-      goToPage(currentPage + 1);
-    }
-  }
-
-  // 특정 페이지로 이동하는 함수
   function goToPage(page) {
-    // 페이지 이동하는 로직 추가
-    window.location.href = '/board/view?category=' + category + '&page=' + page;
+    window.location.href = '/board/lists?id='+ boardTitle +'&category=' + category + '&page=' + page;
   }
-
 </script>
 
-
-<div th:insert="~{common/footer :: footer}"></div>
 </body>
 </html>

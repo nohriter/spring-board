@@ -16,10 +16,11 @@
               <label for="category" class="form-label">카테고리</label>
               <select class="form-select" id="category" name="categoryType" required>
                 <option value="">카테고리 선택</option>
-                <option value="GENERAL">일반</option>
-                <option value="QUESTION">질문</option>
-                <option value="INFORMATION">정보</option>
+                <th:block th:each="category : ${categories}">
+                  <option th:value="${category.name}" th:text="${category.displayName}"></option>
+                </th:block>
               </select>
+
             </div>
             <div class="mb-3">
               <label for="title" class="form-label">제목</label>
@@ -30,6 +31,7 @@
               <textarea class="form-control" id="content" name="content" rows="6" required></textarea>
             </div>
             <input type="hidden" name="writerId" th:value="${memberId}">
+            <input type="hidden" name="boardTitle" th:value="${boardTitle}">
             <button type="submit" class="btn btn-primary me-2">완료</button>
             <button type="button" class="btn btn-primary" onclick="goBack()">취소</button>
           </form>
