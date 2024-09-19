@@ -87,8 +87,9 @@ public class PostController {
 		PostResponse response = postService.postCreate(memberId, request);
 
 		redirect.addAttribute("postId", response.getId());
+		redirect.addAttribute("boardTitle", request.getBoardTitle());
 
-		return "redirect:/board/view/{postId}";
+		return "redirect:/board/view/{postId}?id={boardTitle}";
 	}
 
 	@GetMapping("/board/modify/{postId}")
@@ -108,12 +109,12 @@ public class PostController {
 
 	@PostMapping("/board/{postId}/modify")
 	public String editPost(@Login Long memberId, @PathVariable Long postId, @ModelAttribute PostRequest request,
-		RedirectAttributes redirectAttributes) {
+		RedirectAttributes redirect) {
 
 		postService.updatePost(memberId, postId, request);
 
-		redirectAttributes.addAttribute("postId", postId);
-		redirectAttributes.addAttribute("boardTitle", request.getBoardTitle());
+		redirect.addAttribute("postId", postId);
+		redirect.addAttribute("boardTitle", request.getBoardTitle());
 
 		return "redirect:/board/view/{postId}?id={boardTitle}";
 	}

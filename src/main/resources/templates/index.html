@@ -48,7 +48,7 @@
                     <a th:href="'/board/view/' + ${post.id} + '?id=' + ${boardTitle}" th:text="${post.title}"></a>
                 </td>
                 <td th:text="${post.writerName}">@mdo</td>
-                <td th:text="${post.createAt}">@mdo</td>
+                <td th:text="${post.updatedAt}">@mdo</td>
                 <td th:text="${post.viewCount}">@mdo</td>
                 <td>@1</td>
             </tr>

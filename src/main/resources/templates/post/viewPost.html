@@ -6,16 +6,20 @@
     <div th:insert="~{common/header :: header}"></div>
 
     <main>
-        <!-- 글쓰기 폼 -->
         <div class="row justify-content-center">
             <div class="col-12 col-md-6">
-                <form method="post">
+                <form>
+                    <div class="mb-3 d-flex justify-content-start align-items-center">
+                        <span class="text-muted" th:text="${post.writerName}"></span>
+                        <span class="mx-2 text-muted">|</span>
+                        <span class="text-muted" th:text="${post.updatedDateTime}"></span>
+                    </div>
+
                     <div class="mb-3">
                         <label for="category" class="form-label">카테고리</label>
                         <select class="form-select" id="category" name="categoryType" readonly disabled>
-                                <option th:selected="${category}" th:text="${category}"></option>
+                            <option th:selected="${category}" th:text="${category}"></option>
                         </select>
-
                     </div>
                     <div class="mb-3">
                         <label for="title" class="form-label">제목</label>
@@ -31,6 +35,7 @@
                     </div>
                 </form>
             </div>
+        </div>
 
             <div th:insert="~{post/comment :: commentList}"></div>
 
