@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Include Example</title>
+  <div th:insert="~{common/head :: head}"></div>
+</head>
+<body>
+<div class="container py-3">
+  <div th:insert="~{common/header :: header}"></div>
+  <main>
+    <!-- 글쓰기 폼 -->
+    <div class="row justify-content-center">
+      <div class="col-12 col-md-6">
+        <form th:action="@{/board/guest/write}" method="post" onsubmit="return validateForm()">
+          <div class="d-flex mb-4 justify-content-center">
+            <input type="text" class="form-control me-3 py-2" id="guestNickname" name="guestNickname" placeholder="닉네임을 입력하세요" maxlength="10" required>
+            <input type="password" class="form-control py-2" id="guestPassword" name="guestPassword" placeholder="비밀번호를 입력하세요" maxlength="20" required>
+          </div>
+          <div id="nickname-error" class="text-danger mb-2" style="display:none;">닉네임은 최대 10글자까지 가능합니다.</div>
+          <div id="password-error" class="text-danger mb-2" style="display:none;">비밀번호는 최대 20자까지 가능합니다.</div>
+          <div class="mb-3">
+            <label for="category" class="form-label">카테고리</label>
+            <select class="form-select" id="category" name="categoryType" required>
+              <option value="">카테고리 선택</option>
+              <th:block th:each="category : ${categories}">
+                <option th:value="${category.name}" th:text="${category.displayName}"></option>
+              </th:block>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="title" class="form-label">제목</label>
+            <input type="text" class="form-control" id="title" name="title" required>
+          </div>
+          <div class="mb-3">
+            <label for="content" class="form-label">내용</label>
+            <textarea class="form-control" id="content" name="content" rows="6" required></textarea>
+          </div>
+          <input type="hidden" name="writerId" th:value="${memberId}">
+          <input type="hidden" name="boardTitle" th:value="${boardTitle}">
+          <input type="hidden" name="category" th:value="${category}">
+          <button type="submit" class="btn btn-primary me-2">완료</button>
+          <button type="button" class="btn btn-primary" onclick="goBack()">취소</button>
+        </form>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script th:inline="javascript">
+  function goBack() {
+    window.history.back();
+  }
+
+  function validateForm() {
+    var nickname = document.getElementById("guestNickname").value;
+    var password = document.getElementById("guestPassword").value;
+
+    var nicknameError = document.getElementById("nickname-error");
+    var passwordError = document.getElementById("password-error");
+
+    var isValid = true;
+
+    // 닉네임 검증
+    if (nickname.length > 10) {
+      nicknameError.style.display = "block";
+      isValid = false;
+    } else {
+      nicknameError.style.display = "none";
+    }
+
+    // 비밀번호 검증
+    if (password.length > 20) {
+      passwordError.style.display = "block";
+      isValid = false;
+    } else {
+      passwordError.style.display = "none";
+    }
+
+    return isValid;
+  }
+</script>
+
+<div th:insert="~{common/footer :: footer}"></div>
+</body>
+</html>

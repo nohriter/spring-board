@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <div th:insert="~{common/head :: head}"></div>
+  <style>
+    .form-container {
+      max-width: 300px;
+      margin: 0 auto;
+    }
+    .btn-group {
+      display: flex;
+      justify-content: space-between;
+    }
+    .error-message {
+      color: red;
+      margin-top: 10px;
+      display: none; /* 처음엔 숨김 처리 */
+    }
+  </style>
+</head>
+<body>
+<div class="container d-flex justify-content-center align-items-center min-vh-100">
+  <main class="w-100 form-container">
+    <div class="row justify-content-center">
+      <div class="col-12">
+        <h2 class="text-center mb-4">글 삭제</h2>
+        <form id="deleteForm" onsubmit="return false;">
+          <div class="mb-1">
+            <label for="password" class="form-label">비밀번호</label>
+            <input type="password" class="form-control" id="password" name="password" required>
+          </div>
+          <div class="mt-1 mb-1 error-message" id="error-message">비밀번호가 일치하지 않습니다.</div>
+          <div class="btn-group">
+            <button type="button" class="btn btn-primary w-50 me-2" id="confirmBtn">확인</button>
+            <button type="button" class="btn btn-secondary w-50" id="cancelBtn">취소</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div th:insert="~{common/footer :: footer}"></div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script th:inline="javascript">
+  // 엔터 키를 눌렀을 때 확인 버튼의 동작을 호출하도록 처리
+  $('#deleteForm').on('keydown', function(event) {
+    if (event.key === 'Enter') {
+      event.preventDefault(); // form의 기본 제출 동작을 막음
+      $('#confirmBtn').click(); // 확인 버튼 클릭 동작과 동일하게 실행
+    }
+  });
+
+  // 확인 버튼 클릭 시 Ajax로 서버에 비밀번호 검증 요청
+  $('#confirmBtn').on('click', function() {
+    const isConfirmed = confirm('정말 삭제하시겠습니까?');
+
+    if (isConfirmed) {
+      const password = $('#password').val();
+      const postId = /* postId 값 */ [[${postId}]];
+      const boardTitle = /* postId 값 */ [[${boardTitle}]];
+      const category = /* postId 값 */ [[${category}]];
+
+      $.ajax({
+        url: `/board/guest/${postId}/delete`,
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({ password: password }),
+        success: function(data) {
+          if (data.status === 'success') {
+            window.location.href = '/board/lists?id=' + boardTitle + '&category=' + category; // 삭제 후 원하는 페이지로 이동
+          } else if (data.status === 'invalidEmailOrPassword') {
+            $('#error-message').show();
+          } else {
+            console.error('삭제 오류 발생:', data.error());
+          }
+        },
+      });
+    } else {
+      return;
+    }
+  });
+
+  // 취소 버튼 클릭 시 이전 페이지로 이동
+  $('#cancelBtn').on('click', function() {
+    window.history.back();
+  });
+</script>
+</body>
+</html>

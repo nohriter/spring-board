@@ -12,6 +12,7 @@ import com.nori.springboard.entity.post.Post;
 import com.nori.springboard.entity.post.PostRepository;
 import com.nori.springboard.exception.InvalidParameterException;
 import com.nori.springboard.exception.NotFoundMemberException;
+import com.nori.springboard.exception.post.NotFoundPostException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -69,8 +70,7 @@ public class PostService {
 
 	@Transactional(readOnly = true)
 	public PostResponse getPost(Long postId) {
-		Post post = postRepository.findById(postId)
-			.orElseThrow(IllegalArgumentException::new);
+		Post post = findPostById(postId);
 
 		return PostResponse.of(post);
 	}
@@ -86,8 +86,7 @@ public class PostService {
 		Category category = categoryRepository.findByCategoryType(request.getCategoryType())
 			.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 카테고입니다."));
 
-		Post post = postRepository.findById(postId)
-			.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글니다."));
+		Post post = findPostById(postId);
 
 		verifyPostOwner(memberId, post.getWriter().getId());;
 
@@ -97,11 +96,15 @@ public class PostService {
 	}
 
 	public void deletePost(Long memberId, Long postId) {
-		Post post = postRepository.findById(postId)
-			.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글니다."));
+		Post post = findPostById(postId);
 
-		verifyPostOwner(memberId, post.getWriter().getId());;
+		verifyPostOwner(memberId, post.getWriter().getId());
 
 		postRepository.delete(post);
+	}
+
+	private Post findPostById(Long postId) {
+		return postRepository.findById(postId)
+			.orElseThrow(NotFoundPostException::new);
 	}
 }

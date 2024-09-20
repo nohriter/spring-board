@@ -2,7 +2,6 @@ package com.nori.springboard.service.post;
 
 import com.nori.springboard.common.TimeFormatter;
 import com.nori.springboard.entity.post.Post;
-import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -20,10 +19,11 @@ public class PostResponse {
 	private String updatedAt;
 	private String updatedDateTime;
 	private Long viewCount;
+	private String guestNickname;
 
 	@Builder
 	private PostResponse(Long id, String categoryName, String categoryEngName, String title, String content, Long writerId,
-		String writerName, String createdAt, String updatedAt, String updatedDateTime, Long viewCount) {
+		String writerName, String createdAt, String updatedAt, String updatedDateTime, Long viewCount, String guestNickname) {
 		this.id = id;
 		this.categoryName = categoryName;
 		this.categoryEngName = categoryEngName;
@@ -35,6 +35,7 @@ public class PostResponse {
 		this.updatedAt = updatedAt;
 		this.updatedDateTime = updatedDateTime;
 		this.viewCount = viewCount;
+		this.guestNickname = guestNickname;
 	}
 
 	public static PostResponse of(Post post) {
@@ -44,12 +45,14 @@ public class PostResponse {
 			.categoryEngName(post.getCategory().getCategoryType().name().toLowerCase())
 			.title(post.getTitle())
 			.content(post.getContent())
-			.writerId(post.getWriter().getId())
-			.writerName(post.getWriter().getNickname())
+			.writerId(post.getWriter() != null ? post.getWriter().getId() : null)
+			.writerName(post.getWriter() != null ? post.getWriter().getNickname() : null)
+			.guestNickname(post.getGuestNickname())
 			.createdAt(TimeFormatter.toTodayOrNot(post.getCreatedAt()))
 			.updatedAt(TimeFormatter.toTodayOrNot(post.getUpdatedAt()))
 			.updatedDateTime(TimeFormatter.toDateTime(post.getUpdatedAt()))
 			.viewCount(post.getViewCount())
 			.build();
 	}
+
 }

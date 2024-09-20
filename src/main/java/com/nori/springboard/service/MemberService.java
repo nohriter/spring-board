@@ -5,7 +5,7 @@ import com.nori.springboard.entity.login.EmailVerificationTokenRepository;
 import com.nori.springboard.entity.member.Member;
 import com.nori.springboard.entity.member.MemberRepository;
 import com.nori.springboard.exception.ExpiredTokenException;
-import com.nori.springboard.exception.InvalidLoginInfoException;
+import com.nori.springboard.exception.InvalidEmailOrPasswordException;
 import com.nori.springboard.exception.InvalidParameterException;
 import com.nori.springboard.entity.login.EmailVerificationToken;
 import com.nori.springboard.service.login.IdPasswordValidator;
@@ -43,7 +43,7 @@ public class MemberService {
 
 	private void verifyPassword(String password, String passwordConfirm) {
 		if (!IdPasswordValidator.isValidPassword(password, passwordConfirm)) {
-			throw new InvalidLoginInfoException();
+			throw new InvalidEmailOrPasswordException();
 		}
 	}
 

@@ -9,8 +9,10 @@
         <div class="row justify-content-center">
             <div class="col-12 col-md-6">
                 <form>
+                    <!-- 작성자 정보 -->
                     <div class="mb-3 d-flex justify-content-start align-items-center">
-                        <span class="text-muted" th:text="${post.writerName}"></span>
+                        <!-- writerName이 없으면 guestNickname을 표시 -->
+                        <span class="text-muted" th:text="${post.writerName != null ? post.writerName : post.guestNickname}"></span>
                         <span class="mx-2 text-muted">|</span>
                         <span class="text-muted" th:text="${post.updatedDateTime}"></span>
                     </div>
@@ -18,7 +20,7 @@
                     <div class="mb-3">
                         <label for="category" class="form-label">카테고리</label>
                         <select class="form-select" id="category" name="categoryType" readonly disabled>
-                            <option th:selected="${category}" th:text="${category}"></option>
+                            <option th:selected="${categoryName}" th:text="${categoryName}"></option>
                         </select>
                     </div>
                     <div class="mb-3">
@@ -29,24 +31,30 @@
                         <label for="content" class="form-label">내용</label>
                         <textarea th:text="${post.content}" class="form-control" id="content" name="content" rows="6" readonly disabled></textarea>
                     </div>
-                    <div th:if="${session.loginMember == post.writerId}" class="d-flex justify-content-start">
-                        <button type="button" th:onclick="|location.href='@{/board/modify/{postId}(postId=${post.id}, id=${boardTitle})}'|" class="btn btn-primary me-2">수정</button>
-                        <button id="deletePostBtn" type="button" class="btn btn-primary" th:attr="data-post-id=${post.id}">삭제</button>
+
+                    <!-- 수정/삭제 버튼을 writerId가 존재할 때만 표시 (회원일 경우) -->
+                    <div th:if="${post.writerId != null}" class="d-flex justify-content-start">
+                        <div th:if="${session.loginMember == post.writerId}" class="d-flex justify-content-start">
+                            <button type="button" th:onclick="|location.href='@{/board/modify/{postId}(postId=${post.id}, id=${boardTitle})}'|" class="btn btn-primary me-2">수정</button>
+                            <button id="deletePostBtn" type="button" class="btn btn-primary" th:attr="data-post-id=${post.id}">삭제</button>
+                        </div>
+                    </div>
+                    <div th:if="${post.writerId == null}" class="d-flex justify-content-start">
+                        <button type="button" id="guestModifyBtn" th:onclick="|location.href='@{/board/guest/{postId}/modify(postId=${post.id}, id=${boardTitle})}'|" class="btn btn-primary me-2">수정</button>
+                        <button type="button" id="guestDeleteBtn"th:onclick="|location.href='@{/board/guest/{postId}/delete(postId=${post.id}, id=${boardTitle}, category=${category})}'|" class="btn btn-primary me-2">삭제</button>
                     </div>
                 </form>
             </div>
         </div>
 
-            <div th:insert="~{post/comment :: commentList}"></div>
+        <div th:insert="~{post/comment :: commentList}"></div>
 
-        </div>
     </main>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 
 <script th:inline="javascript">
-
   // 삭제 폼 제출 전 확인
   document.getElementById('deletePostBtn').addEventListener('click', function() {
     const postId = this.getAttribute('data-post-id');

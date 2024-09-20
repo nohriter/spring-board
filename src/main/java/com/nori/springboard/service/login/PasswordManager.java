@@ -1,5 +1,6 @@
 package com.nori.springboard.service.login;
 
+import com.nori.springboard.exception.InvalidEmailOrPasswordException;
 import org.mindrot.jbcrypt.BCrypt;
 
 public class PasswordManager {
@@ -10,7 +11,9 @@ public class PasswordManager {
 	}
 
 	// 비밀번호 검증
-	public static boolean isPasswordMatch(String plainPassword, String hashedPassword) {
-		return BCrypt.checkpw(plainPassword, hashedPassword);
+	public static void isPasswordMatch(String plainPassword, String hashedPassword) {
+		if(!BCrypt.checkpw(plainPassword, hashedPassword)) {
+			throw new InvalidEmailOrPasswordException();
+		}
 	}
 }

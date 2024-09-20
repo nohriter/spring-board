@@ -1,4 +1,4 @@
-package com.nori.springboard.controller.login;
+package com.nori.springboard.controller.post;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,8 +9,8 @@ import lombok.ToString;
 @Setter
 @ToString
 @NoArgsConstructor
-public class EmailsendRequest {
+public class PostPasswordRequest {
 
-	private String loginId;
+	private String password;
 
 }

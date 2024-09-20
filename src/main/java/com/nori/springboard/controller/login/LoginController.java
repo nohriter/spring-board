@@ -100,7 +100,7 @@ public class LoginController {
 
 	@PostMapping("/resend-verification")
 	@ResponseBody
-	public ResponseEntity<Map<String, String>> resendVerificationEmail(@RequestBody EmailsendRequest request) {
+	public ResponseEntity<Map<String, String>> resendVerificationEmail(@RequestBody EmailSendRequest request) {
 		LoginMemberResponse loginResponse = loginService.resendMail(request.getLoginId());
 
 		emailService.sendSimpleEmail(loginResponse.getLoginId(), loginResponse.getToken());
@@ -120,7 +120,7 @@ public class LoginController {
 
 	@PostMapping("/find-password")
 	@ResponseBody
-	public ResponseEntity<Map<String, String>> findPassword(@RequestBody EmailsendRequest request) {
+	public ResponseEntity<Map<String, String>> findPassword(@RequestBody EmailSendRequest request) {
 		LoginMemberResponse loginMemberResponse = loginService.passwordReset(request.getLoginId());
 
 		emailService.sendEmailPasswordReset(loginMemberResponse.getLoginId(), loginMemberResponse.getToken());

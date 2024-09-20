@@ -1,6 +1,7 @@
 package com.nori.springboard.service.login;
 
 import static com.nori.springboard.config.SessionConst.*;
+import static com.nori.springboard.service.login.PasswordManager.isPasswordMatch;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,7 +13,7 @@ import com.nori.springboard.entity.member.MemberRepository;
 import com.nori.springboard.exception.AlreadyVerifyEmailException;
 import com.nori.springboard.exception.ExpiredTokenException;
 import com.nori.springboard.exception.InvalidParameterException;
-import com.nori.springboard.exception.InvalidLoginInfoException;
+import com.nori.springboard.exception.InvalidEmailOrPasswordException;
 import com.nori.springboard.exception.NotVerifyEmailException;
 import com.nori.springboard.entity.login.EmailVerificationToken;
 import jakarta.servlet.http.HttpServletRequest;
@@ -116,10 +117,10 @@ public class LoginService {
 
 	private void verifyEmailAndPassword(String email, String password, String passwordConfirm) {
 		if (!IdPasswordValidator.isValidEmail(email)) {
-			throw new InvalidLoginInfoException();
+			throw new InvalidEmailOrPasswordException();
 		}
 		if (!IdPasswordValidator.isValidPassword(password, passwordConfirm)) {
-			throw new InvalidLoginInfoException();
+			throw new InvalidEmailOrPasswordException();
 		}
 	}
 
@@ -144,7 +145,7 @@ public class LoginService {
 	 */
 	public Long login(EmailLoginRequest request) {
 		Member member = findMemberByLoginId(request.getLoginId());
-		validatePassword(request.getPassword(), member.getPassword());
+		isPasswordMatch(request.getPassword(), member.getPassword());
 		validateEmailVerification(member);
 
 		return member.getId();
@@ -189,13 +190,7 @@ public class LoginService {
 
 	private Member findMemberByLoginId(String loginId) {
 		return memberRepository.findByLoginId(loginId)
-			.orElseThrow(InvalidLoginInfoException::new);
-	}
-
-	private void validatePassword(String rawPassword, String encryptedPassword) {
-		if (!PasswordManager.isPasswordMatch(rawPassword, encryptedPassword)) {
-			throw new InvalidLoginInfoException();
-		}
+			.orElseThrow(InvalidEmailOrPasswordException::new);
 	}
 
 	private void validateEmailVerification(Member member) {

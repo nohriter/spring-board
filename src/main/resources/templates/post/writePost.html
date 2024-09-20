@@ -16,8 +16,8 @@
               <label for="category" class="form-label">카테고리</label>
               <select class="form-select" id="category" name="categoryType" required>
                 <option value="">카테고리 선택</option>
-                <th:block th:each="category : ${categories}">
-                  <option th:value="${category.name}" th:text="${category.displayName}"></option>
+                <th:block th:each="cat : ${categories}">
+                  <option th:value="${cat.name}" th:text="${cat.displayName}"></option>
                 </th:block>
               </select>
 

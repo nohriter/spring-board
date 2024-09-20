@@ -1,20 +1,20 @@
 <!-- start header.html -->
 <header>
   <div class="d-flex flex-column flex-md-row align-items-center border-bottom">
-    <!-- 왼쪽 타이틀 -->
     <a th:href="@{/}" class="d-flex align-items-center link-body-emphasis text-decoration-none">
       <span class="ms-2 fs-4">게시판</span>
     </a>
 
-    <!-- 오른쪽 로그인 및 내정보/글쓰기 메뉴 -->
     <nav class="d-inline-flex mt-2 mt-md-0 ms-auto">
       <th:block th:if="${session.loginMember != null}">
         <a th:href="@{/myInfo}" class="me-3 py-2 link-body-emphasis text-decoration-none">내정보</a>
-        <a th:href="'/board/write?id=' + ${boardTitle}" class="me-3 py-2 link-body-emphasis text-decoration-none">글쓰기</a>
         <a th:href="@{/logout}" class="me-3 py-2 link-body-emphasis text-decoration-none">로그아웃</a>
+        <a th:href="'/board/write?id=' + ${boardTitle}" class="me-3 py-2 link-body-emphasis text-decoration-none">글쓰기</a>
       </th:block>
-      <th:block th:if="${session.loginMember == null}">
-        <!-- 팝업을 띄우기 위한 버튼 -->
+      <th:block th:if="${session.loginMember == null} ">
+        <th:block th:if="${boardTitle == 'free'}">
+          <a th:href="'/board/guest/write?id=' + ${boardTitle}" class="me-3 py-2 link-body-emphasis text-decoration-none">글쓰기</a>
+        </th:block>
         <a href="#" class="me-3 py-2 link-body-emphasis text-decoration-none" data-bs-toggle="modal" data-bs-target="#loginModal">로그인</a>
         <a th:href="@{/signup}" class="me-3 py-2 link-body-emphasis text-decoration-none">회원가입</a>
       </th:block>

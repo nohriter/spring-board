@@ -45,9 +45,9 @@
                 <th scope="row" th:text="${post.id}">1</th>
                 <td th:text="${post.categoryName}">Mark</td>
                 <td>
-                    <a th:href="'/board/view/' + ${post.id} + '?id=' + ${boardTitle}" th:text="${post.title}"></a>
+                    <a th:href="'/board/view/' + ${post.id} + '?id=' + ${boardTitle} + '&category=' + ${category}" th:text="${post.title}"></a>
                 </td>
-                <td th:text="${post.writerName}">@mdo</td>
+                <td th:text="${post.writerName != null ? post.writerName : post.guestNickname}"></td>
                 <td th:text="${post.updatedAt}">@mdo</td>
                 <td th:text="${post.viewCount}">@mdo</td>
                 <td>@1</td>

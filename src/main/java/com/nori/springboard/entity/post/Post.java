@@ -38,6 +38,12 @@ public class Post extends BaseEntity {
 
 	private long viewCount;
 
+	@Column(nullable = true, length = 10)
+	private String guestNickname;
+
+	@Column(nullable = true, length = 60)
+	private String guestPassword;
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "board_id")
 	private Board board;
@@ -53,10 +59,12 @@ public class Post extends BaseEntity {
 	private boolean isDeleted;
 
 	@Builder
-	private Post(String title, String content, Board board, Category category,
-		Member writer) {
+	private Post(String title, String content, String guestNickname, String guestPassword,
+		Board board, Category category, Member writer) {
 		this.title = title;
 		this.content = content;
+		this.guestNickname = guestNickname;
+		this.guestPassword = guestPassword;
 		this.board = board;
 		this.category = category;
 		this.writer = writer;
@@ -66,5 +74,9 @@ public class Post extends BaseEntity {
 		this.category = category;
 		this.title = title;
 		this.content = content;
+	}
+
+	public void delete() {
+		isDeleted = true;
 	}
 }

@@ -28,8 +28,6 @@
   </div>
   <!-- 댓글 입력 폼 -->
 
-
-
   <script th:inline="javascript">
 
     const USER_ID = [[${session.loginMember}]];
@@ -138,24 +136,24 @@
       // 새로운 댓글 목록을 순회하면서 HTML을 생성하여 추가
       $.each(comments, function(index, comment) {
         let commentHtml = "";
-        let editDeleteButtonsHtml = ""
-        console.log("comments", comments);
-        console.log("comments", comments);
+        let editDeleteButtonsHtml = "";
 
-        if(comment.deleted == true && !comment.isReply) {
+        // 댓글 내용을 안전하게 텍스트로 변환 (이스케이프 처리)
+        const sanitizedContent = $('<div/>').text(comment.content).html();  // HTML 이스케이프 처리
+
+        if (comment.deleted == true && !comment.isReply) {
           commentHtml =
               '<li class="list-group-item">' +
-                '삭제된 댓글입니다.' +
+              '삭제된 댓글입니다.' +
               '</li>';
           let allDeleted = true;
 
           $.each(comment.replies, function(index, reply) {
-            console.log("reply.deleted", reply);
             if (reply.deleted == false) {
               allDeleted = false;
             }
           });
-          if(allDeleted) {
+          if (allDeleted) {
             commentHtml = "";
           }
 
@@ -165,7 +163,7 @@
           let commentWriterId = comment.writerId; // 댓글 작성자의 ID
 
           editDeleteButtonsHtml =
-              '<button type="button" id="updateComment-' + comment.id + ' " class="btn btn-sm btn-outline-primary me-2 update-comment">수정</button>' +
+              '<button type="button" id="updateComment-' + comment.id + '" class="btn btn-sm btn-outline-primary me-2 update-comment">수정</button>' +
               '<button type="button" onclick="deleteComment(' + comment.id + ')" class="btn btn-sm btn-outline-danger">삭제</button>';
 
           commentHtml =
@@ -176,7 +174,7 @@
               '<span class="fw-bold me-2">' + comment.writerNickname + '</span>' +
               '<span class="text-muted comment_info_date">' + comment.createdAt + '</span>' +
               '</div>' +
-              '<p class="mb-0 mt-2">' + comment.content + '</p>' +
+              '<p class="mb-0 mt-2">' + sanitizedContent + '</p>' + // XSS 방지: HTML 이스케이프 처리된 내용 사용
               '<div class="editDeleteArea d-flex justify-content-end">' +
               '<button href="#" class="reply-button btn btn-sm btn-outline-primary me-2">답글</button>' +
               '</div>' +
@@ -188,7 +186,7 @@
           commentList.append(commentHtml);
 
           if (USER_ID == commentWriterId) {
-            $('#comment-'+comment.id).find('.editDeleteArea').append(editDeleteButtonsHtml);
+            $('#comment-' + comment.id).find('.editDeleteArea').append(editDeleteButtonsHtml);
           }
         }
 
@@ -196,6 +194,7 @@
         renderReplies(comment.replies, commentList, editDeleteButtonsHtml);
       });
     }
+
     <!-- 댓글 렌더링 -->
 
     <!-- 답글 렌더링 -->
@@ -203,9 +202,16 @@
       // 답글을 순회하면서 HTML을 생성하여 추가
       $.each(replies, function(index, reply) {
         let replyWriterId = reply.writerId; // 댓글 작성자의 ID
-        let replyHtml = ""
-        if(reply.deleted == true) {
+        let replyHtml = "";
 
+        // 답글 내용에 대한 HTML 이스케이프 처리
+        const sanitizedReplyContent = $('<div/>').text(reply.content).html(); // HTML 이스케이프 처리
+
+        if(reply.deleted == true) {
+          replyHtml =
+              '<li class="list-group-item bg-light">' +
+              '삭제된 답글입니다.' +
+              '</li>';
         } else {
           editDeleteButtonsHtml =
               '<button type="button" class="btn btn-sm btn-outline-primary me-2 update-comment">수정</button>' +
@@ -213,7 +219,7 @@
 
           let replyWriterNickname = '';
 
-          if(reply.parentsCommentNickname != null) {
+          if (reply.parentsCommentNickname != null) {
             replyWriterNickname = '<strong>' + reply.parentsCommentNickname + ' </strong>';
           }
 
@@ -225,24 +231,25 @@
               '<span class="fw-bold me-2">' + reply.writerNickname + '</span>' +
               '<span class="text-muted comment_info_date">' + reply.createdAt + '</span>' +
               '</div>' +
-              '<p class="mb-0 mt-2">' + replyWriterNickname  + reply.content + '</p>' +
+              // 답글 내용에 이스케이프 처리된 내용 사용
+              '<p class="mb-0 mt-2">' + replyWriterNickname + sanitizedReplyContent + '</p>' +
               '<div class="editDeleteArea d-flex justify-content-end">' +
               '<button href="#" class="reply-button btn btn-sm btn-outline-primary me-2">답글</button>' +
               '</div>' +
               '</div>' +
               '</div>' +
               '</li>';
-
-          // 답글 목록에 추가
-          parentElement.append(replyHtml);
-
-          if (USER_ID == replyWriterId) {
-            $('#comment-'+reply.id).find('.editDeleteArea').append(editDeleteButtonsHtml);
-          }
         }
 
+        // 답글 목록에 추가
+        parentElement.append(replyHtml);
+
+        if (USER_ID == replyWriterId) {
+          $('#comment-'+reply.id).find('.editDeleteArea').append(editDeleteButtonsHtml);
+        }
       });
     }
+
     <!-- 답글 렌더링 -->
 
     <!-- 댓글 수정 -->
