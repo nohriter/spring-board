@@ -9,39 +9,43 @@
         <div class="row justify-content-center">
             <div class="col-12 col-md-6">
                 <form>
-                    <!-- 작성자 정보 -->
-                    <div class="mb-3 d-flex justify-content-start align-items-center">
-                        <!-- writerName이 없으면 guestNickname을 표시 -->
+                    <!-- 카테고리와 제목을 한 줄에 표시 -->
+                    <div>
+                        <p class="mb-1">
+                            <strong th:text="'[' + ${categoryName} + ']'"></strong>
+                            <strong th:text="${post.title}"></strong>
+                        </p>
+                    </div>
+
+                    <!-- 작성자와 작성시간을 한 줄에 표시 -->
+                    <div class="d-flex justify-content-start align-items-center">
                         <span class="text-muted" th:text="${post.writerName != null ? post.writerName : post.guestNickname}"></span>
                         <span class="mx-2 text-muted">|</span>
                         <span class="text-muted" th:text="${post.updatedDateTime}"></span>
                     </div>
 
+                    <!-- 구분선 -->
+                    <hr class="mt-1 mb-3"/>
+
+                    <!-- 내용 표시 -->
                     <div class="mb-3">
-                        <label for="category" class="form-label">카테고리</label>
-                        <select class="form-select" id="category" name="categoryType" readonly disabled>
-                            <option th:selected="${categoryName}" th:text="${categoryName}"></option>
-                        </select>
+                        <div th:text="${post.content}" class="form-control-plaintext" style="white-space: pre-line;"></div>
                     </div>
-                    <div class="mb-3">
-                        <label for="title" class="form-label">제목</label>
-                        <input th:value="${post.title}" type="text" class="form-control" id="title" name="title" readonly disabled>
-                    </div>
-                    <div class="mb-3">
-                        <label for="content" class="form-label">내용</label>
-                        <textarea th:text="${post.content}" class="form-control" id="content" name="content" rows="6" readonly disabled></textarea>
-                    </div>
+
+
 
                     <!-- 수정/삭제 버튼을 writerId가 존재할 때만 표시 (회원일 경우) -->
                     <div th:if="${post.writerId != null}" class="d-flex justify-content-start">
                         <div th:if="${session.loginMember == post.writerId}" class="d-flex justify-content-start">
-                            <button type="button" th:onclick="|location.href='@{/board/modify/{postId}(postId=${post.id}, id=${boardTitle})}'|" class="btn btn-primary me-2">수정</button>
-                            <button id="deletePostBtn" type="button" class="btn btn-primary" th:attr="data-post-id=${post.id}">삭제</button>
+                            <button type="button" th:onclick="|location.href='@{/board/modify/{postId}(postId=${post.id}, id=${boardTitle})}'|" class="btn btn-sm btn-primary me-2">수정</button>
+                            <button id="deletePostBtn" type="button" class="btn btn-sm btn-primary" th:attr="data-post-id=${post.id}">삭제</button>
                         </div>
                     </div>
+
+                    <!-- 비회원 작성 글일 경우 -->
                     <div th:if="${post.writerId == null}" class="d-flex justify-content-start">
-                        <button type="button" id="guestModifyBtn" th:onclick="|location.href='@{/board/guest/{postId}/modify(postId=${post.id}, id=${boardTitle})}'|" class="btn btn-primary me-2">수정</button>
-                        <button type="button" id="guestDeleteBtn"th:onclick="|location.href='@{/board/guest/{postId}/delete(postId=${post.id}, id=${boardTitle}, category=${category})}'|" class="btn btn-primary me-2">삭제</button>
+                        <button type="button" id="guestModifyBtn" th:onclick="|location.href='@{/board/guest/{postId}/modify(postId=${post.id}, id=${boardTitle})}'|" class="btn btn-sm btn-primary me-2">수정</button>
+                        <button type="button" id="guestDeleteBtn" th:onclick="|location.href='@{/board/guest/{postId}/delete(postId=${post.id}, id=${boardTitle}, category=${category})}'|" class="btn btn-sm btn-primary me-2">삭제</button>
                     </div>
                 </form>
             </div>
