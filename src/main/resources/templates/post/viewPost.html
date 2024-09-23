@@ -29,10 +29,8 @@
 
                     <!-- 내용 표시 -->
                     <div class="mb-3">
-                        <div th:text="${post.content}" class="form-control-plaintext" style="white-space: pre-line;"></div>
+                        <div th:utext="${post.content}" class="form-control-plaintext" style="white-space: pre-line;"></div>
                     </div>
-
-
 
                     <!-- 수정/삭제 버튼을 writerId가 존재할 때만 표시 (회원일 경우) -->
                     <div th:if="${post.writerId != null}" class="d-flex justify-content-start">
