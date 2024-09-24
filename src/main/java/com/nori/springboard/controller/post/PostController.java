@@ -81,14 +81,12 @@ public class PostController {
 	}
 
 	@GetMapping("/board/write")
-	public String writePostForm(@Login Long memberId, @RequestParam(value = "id") String boardTitle,
-		@RequestParam(value = "category") String category, Model model) {
+	public String writePostForm(@Login Long memberId, @RequestParam(value = "id") String boardTitle, Model model) {
 		List<CategoryResponse> categories = categoryService.getCategoriesByBoard(boardTitle);
 
 		model.addAttribute("memberId", memberId);
 		model.addAttribute("categories", categories);
 		model.addAttribute("boardTitle", boardTitle);
-		model.addAttribute("category", category);
 
 		return "post/writePost";
 	}
@@ -99,8 +97,9 @@ public class PostController {
 
 		redirect.addAttribute("postId", response.getId());
 		redirect.addAttribute("boardTitle", request.getBoardTitle());
+		redirect.addAttribute("category", response.getCategoryEngName());
 
-		return "redirect:/board/view/{postId}?id={boardTitle}";
+		return "redirect:/board/view/{postId}?id={boardTitle}&category={category}";
 	}
 
 	@GetMapping("/board/modify/{postId}")
