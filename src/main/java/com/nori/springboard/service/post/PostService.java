@@ -6,6 +6,8 @@ import com.nori.springboard.entity.board.BoardRepository;
 import com.nori.springboard.entity.category.Category;
 import com.nori.springboard.entity.category.CategoryRepository;
 import com.nori.springboard.entity.category.CategoryType;
+import com.nori.springboard.entity.image.Image;
+import com.nori.springboard.entity.image.ImageRepository;
 import com.nori.springboard.entity.member.Member;
 import com.nori.springboard.entity.member.MemberRepository;
 import com.nori.springboard.entity.post.Post;
@@ -13,6 +15,7 @@ import com.nori.springboard.entity.post.PostRepository;
 import com.nori.springboard.exception.InvalidParameterException;
 import com.nori.springboard.exception.NotFoundMemberException;
 import com.nori.springboard.exception.post.NotFoundPostException;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -31,6 +34,7 @@ public class PostService {
 	private final CategoryRepository categoryRepository;
 	private final PostRepository postRepository;
 	private final BoardRepository boardRepository;
+	private final ImageRepository imageRepository;
 
 	public PostResponse postCreate(Long memberId, PostRequest request) {
 		verifyPostOwner(memberId, request.getWriterId());
@@ -46,7 +50,21 @@ public class PostService {
 
 		Post post = request.toEntity(writer, category, board);
 
+		imagePostMapping(request.getImageIds(), post);
+
 		return PostResponse.of(postRepository.save(post));
+	}
+
+	private void imagePostMapping(List<String> imageIds, Post post) {
+		if (imageIds != null && !imageIds.isEmpty()) {
+			for (String imageId : imageIds) {
+				Image image = imageRepository.findById(Long.parseLong(imageId))
+					.orElseThrow(() -> new IllegalArgumentException("Invalid image ID: " + imageId));
+
+				image.registerPost(post);
+				imageRepository.save(image);
+			}
+		}
 	}
 
 	@Transactional(readOnly = true)

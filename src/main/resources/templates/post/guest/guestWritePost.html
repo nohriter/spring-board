@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <th:block th:insert="~{common/head :: head}"></th:block> <!-- 공통 CSS, JS 로드 -->
+<body>
+  <th:block th:insert="~{common/header :: header}"></th:block>
+
+  <main>
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-12 col-md-10">
+          <form id="guestForm" th:action="@{/board/guest/write}" method="post">
+            <div class="d-flex mb-3 justify-content-center">
+              <input type="text" class="form-control me-3 py-2" id="guestNickname" name="guestNickname" placeholder="닉네임을 입력하세요" maxlength="10" required>
+              <input type="password" class="form-control py-2" id="guestPassword" name="guestPassword" placeholder="비밀번호를 입력하세요" maxlength="20" required>
+            </div>
+            <div id="nickname-error" class="text-danger mb-2" style="display:none;">닉네임은 최대 10글자까지 가능합니다.</div>
+            <div id="password-error" class="text-danger mb-2" style="display:none;">비밀번호는 최대 20자까지 가능합니다.</div>
+            <div class="mb-3">
+              <label for="category" class="form-label">카테고리</label>
+              <select class="form-select" id="category" name="categoryType" required>
+                <option value="">카테고리 선택</option>
+                <th:block th:each="category : ${categories}">
+                  <option th:value="${category.name}" th:text="${category.displayName}" th:selected="${category.name == selectedCategory}"></option>
+                </th:block>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="title" class="form-label">제목</label>
+              <!-- name="title" 속성을 추가하여 제목이 전송되도록 설정 -->
+              <input type="text" class="form-control" id="title" name="title" required>
+            </div>
+            <div class="mb-3">
+              <label for="editor" class="form-label">내용</label>
+              <div id="editor"></div>
+            </div>
+            <!-- 숨겨진 필드에 CKEditor 내용을 담아 전송 -->
+            <input type="hidden" name="content" id="hidden-content">
+            <input type="hidden" name="imageIds" id="hidden-imageIds">
+            <input type="hidden" name="boardTitle" th:value="${boardTitle}">
+            <button type="submit" class="btn btn-primary me-2">완료</button>
+            <button type="button" class="btn btn-primary" onclick="goBack()">취소</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </main>
+
+<script th:type="module">
+  import { initializeEditor, handlePostSubmit, ImageManager } from '/js/editor.js';
+
+  let editorInstance;
+
+  document.addEventListener('DOMContentLoaded', () => {
+    initializeEditor('#editor').then(editor => {
+      editorInstance = editor;
+    });
+
+    const form = document.getElementById('guestForm');
+    form.addEventListener('submit', (event) => {
+      if (!validateForm()) {
+        event.preventDefault();
+      }
+    });
+
+  });
+
+  function validateForm() {
+    let nickname = document.getElementById("guestNickname").value;
+    let password = document.getElementById("guestPassword").value;
+
+    let nicknameError = document.getElementById("nickname-error");
+    let passwordError = document.getElementById("password-error");
+
+    let isValid = true;
+
+    if (nickname.length > 10) {
+      nicknameError.style.display = "block";
+      isValid = false;
+    } else {
+      nicknameError.style.display = "none";
+    }
+
+    if (password.length > 20) {
+      passwordError.style.display = "block";
+      isValid = false;
+    } else {
+      passwordError.style.display = "none";
+    }
+
+    const htmlContent = editorInstance.getData();
+
+    if (htmlContent.trim() === "") {
+      alert("내용을 입력해주세요.")
+      isValid = false;
+    }
+
+    handlePostSubmit(editorInstance);
+
+    document.getElementById('hidden-content').value = htmlContent;
+
+    document.getElementById('hidden-imageIds').value = ImageManager.getImageIds();
+
+    return isValid;
+  }
+</script>
+
+<th:block th:insert="~{common/footer :: footer}"></th:block>
+</body>
+</html>

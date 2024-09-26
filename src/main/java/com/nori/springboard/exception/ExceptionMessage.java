@@ -17,7 +17,9 @@ public enum ExceptionMessage {
 
 	EXPIRED_TOKEN("expiredToken", "이미 만료된 토큰입니다;"),
 
-	INVALID_PARAMETER("invalidParameter", "잘못된 요청입니다.");
+	INVALID_PARAMETER("invalidParameter", "잘못된 요청입니다."),
+
+	INVALID_FILE("invalidFile", "파일 형식이 올바르지 않습니다.");
 
 	private final String code;
 	private final String message;

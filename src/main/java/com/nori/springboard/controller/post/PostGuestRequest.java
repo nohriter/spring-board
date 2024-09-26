@@ -6,7 +6,7 @@ import com.nori.springboard.entity.board.Board;
 import com.nori.springboard.entity.category.Category;
 import com.nori.springboard.entity.category.CategoryType;
 import com.nori.springboard.entity.post.Post;
-import com.nori.springboard.service.login.PasswordManager;
+import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -25,6 +25,7 @@ public class PostGuestRequest {
 	private String content;
 	private String guestNickname;
 	private String guestPassword;
+	private List<String> imageIds;
 
 	public Post toEntity(Category category, Board board) {
 		return Post.builder()

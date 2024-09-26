@@ -1,51 +1,80 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-  <title>Include Example</title>
-  <div th:insert="~{common/head :: head}"></div>
-</head>
+  <th:block th:insert="~{common/head :: head}"></th:block>
 <body>
-<div class="container py-3">
-  <div th:insert="~{common/header :: header}"></div>
+  <th:block th:insert="~{common/header :: header}"></th:block>
+
     <main>
-      <!-- 글쓰기 폼 -->
-      <div class="row justify-content-center">
-        <div class="col-12 col-md-6">
-          <form th:action="@{/board/write}" method="post">
-            <div class="mb-3">
-              <label for="category" class="form-label">카테고리</label>
-              <select class="form-select" id="category" name="categoryType" required>
-                <option value="">카테고리 선택</option>
-                <th:block th:each="cat : ${categories}">
-                  <option th:value="${cat.name}" th:text="${cat.displayName}"></option>
-                </th:block>
-              </select>
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-12 col-md-10">
+            <form id="writeForm" th:action="@{/board/write}" method="post">
+              <div class="mb-3">
+                <label for="category" class="form-label">카테고리</label>
+                <select class="form-select" id="category" name="categoryType" required>
+                  <option value="">카테고리 선택</option>
+                  <th:block th:each="cat : ${categories}">
+                    <option th:value="${cat.name}" th:text="${cat.displayName}"></option>
+                  </th:block>
+                </select>
 
-            </div>
-            <div class="mb-3">
-              <label for="title" class="form-label">제목</label>
-              <input type="text" class="form-control" id="title" name="title" required>
-            </div>
-            <div class="mb-3">
-              <label for="content" class="form-label">내용</label>
-              <textarea class="form-control" id="content" name="content" rows="6" required></textarea>
-            </div>
-            <input type="hidden" name="writerId" th:value="${memberId}">
-            <input type="hidden" name="boardTitle" th:value="${boardTitle}">
-            <button type="submit" class="btn btn-primary me-2">완료</button>
-            <button type="button" class="btn btn-primary" onclick="goBack()">취소</button>
-          </form>
+              </div>
+              <div class="mb-3">
+                <label for="title" class="form-label">제목</label>
+                <input type="text" class="form-control" id="title" name="title" required>
+              </div>
+              <div class="mb-3">
+                <label for="editor" class="form-label">내용</label>
+                <div id="editor"></div>
+              </div>
+              <input type="hidden" name="writerId" th:value="${memberId}">
+              <input type="hidden" name="boardTitle" th:value="${boardTitle}">
+              <input type="hidden" name="content" id="hidden-content">
+              <input type="hidden" name="imageIds" id="hidden-imageIds">
+              <button type="submit" class="btn btn-primary me-2">완료</button>
+              <button type="button" class="btn btn-primary" onclick="goBack()">취소</button>
+            </form>
+          </div>
         </div>
-      </div>
-    </main>
-</div>
+    </div>
+  </main>
 
+<script th:type="module">
+    import { initializeEditor, handlePostSubmit, ImageManager } from '/js/editor.js';
 
-<script th:inline="javascript">
-  function goBack() {
-    window.history.back();
-  }
+    let editorInstance;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initializeEditor('#editor').then(editor => {
+        editorInstance = editor;
+      });
+
+      const form = document.getElementById('writeForm');
+      form.addEventListener('submit', (event) => {
+        if (!validateForm()) {
+          event.preventDefault();
+        }
+      });
+    });
+
+    function validateForm() {
+      const htmlContent = editorInstance.getData();
+      console.log("htmlContent :", htmlContent);
+
+      if (htmlContent.trim() === "") {
+        alert("내용을 입력해주세요.")
+        return false;
+      }
+
+      handlePostSubmit(editorInstance);
+
+      document.getElementById('hidden-content').value = htmlContent;
+
+      document.getElementById('hidden-imageIds').value = ImageManager.getImageIds();
+
+      return true;
+    }
 </script>
-<div th:insert="~{common/footer :: footer}"></div>
+
 </body>
 </html>

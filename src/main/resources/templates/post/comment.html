@@ -1,20 +1,12 @@
 <div th:fragment="commentList">
 
-  <!-- 댓글 목록 -->
   <div class="row justify-content-center mt-5">
-    <div class="col-12 col-md-6 mb-2">
+    <div class="col-12 col-md-10 mb-2">
       <strong class="mb-1">댓글</strong>
       <ul class="list-group mt-2">
       </ul>
-    </div>
-  </div>
-  <!-- 댓글 목록 -->
 
-
-  <!-- 댓글 입력 폼 -->
-  <div class="row justify-content-center">
-    <div class="col-12 col-md-6">
-      <form>
+      <form class="mt-2">
         <div class="mb-3">
           <textarea class="form-control" id="commentContent" name="content" rows="3" placeholder="댓글을 남겨보세요"></textarea>
         </div>
@@ -24,9 +16,9 @@
           <button type="button" class="btn btn-sm btn-primary" onclick="addComment('', false)">등록</button>
         </div>
       </form>
+
     </div>
   </div>
-  <!-- 댓글 입력 폼 -->
 
   <script th:inline="javascript">
 
@@ -106,7 +98,6 @@
 
     <!-- 댓글 로드 -->
     function loadComments() {
-      console.log('start loadComments');
       const requestData = {
         "postId": [[${post.id}]]
       };
@@ -116,7 +107,6 @@
         contentType: 'application/json', // JSON 형식으로 데이터를 보내기 위한 Content-Type 설정
         data: JSON.stringify(requestData), // 데이터를 JSON 문자열로 변환하여 전송합니다.
         success: function (comments) {
-          console.log('success loadComments');
           // 댓글 목록을 받아와서 화면에 렌더링합니다.
           renderComments(comments);
         },

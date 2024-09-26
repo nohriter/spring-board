@@ -23,8 +23,8 @@ public class WebConfig implements WebMvcConfigurer {
 			.excludePathPatterns("/", "/login", "/logout", "/board/view/**", "/board/lists/**", "/comments",
 				"/images/**", "/signup", "/resend-verification", "/verify-email",
 				"/board/guest/**",
-				"/find-password", "/update-password", "/kakao-login",
-				"/healthcheck", "/error", "/favicon.ico", "/css/styles.css")
+				"/find-password", "/update-password", "/kakao-login", "/image/**",
+				"/healthcheck", "/error", "/favicon.ico", "/css/styles.css", "/js/**")
 			.order(1);
 	}
 

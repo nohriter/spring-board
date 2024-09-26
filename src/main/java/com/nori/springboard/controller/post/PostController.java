@@ -143,12 +143,11 @@ public class PostController {
 		model.addAttribute("categories", categories);
 		model.addAttribute("boardTitle", boardTitle);
 
-		return "post/nonlogin/nonWritePost";
+		return "post/guest/guestWritePost";
 	}
 
 	@PostMapping("/board/guest/write")
 	public String writePost(@ModelAttribute PostGuestRequest request,  RedirectAttributes redirect) {
-		log.info("guest write password: {}", request.getGuestPassword());
 		PostResponse response = postGuestService.postCreate(request);
 
 		redirect.addAttribute("postId", response.getId());
@@ -183,7 +182,7 @@ public class PostController {
 		model.addAttribute("category", category);
 		model.addAttribute("boardTitle", boardTitle);
 
-		return "post/nonlogin/nonDeletePost";
+		return "post/guest/guestDeletePost";
 	}
 
 	@PostMapping("/board/guest/{postId}/delete")

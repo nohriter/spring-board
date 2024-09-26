@@ -2,10 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <th:block th:insert="~{common/head :: head}"></th:block>
 <body>
-<div class="container py-3">
-    <th:block th:insert="~{common/header :: header}"></th:block>
-</div>
-
+<th:block  th:insert="~{common/header :: header}"></th:block>
 <main class="container">
 
     <!-- 카테고리 선택 메뉴 -->
@@ -131,7 +128,7 @@
     </div>
 </main>
 
-<div th:insert="~{common/footer :: footer}"></div>
+<th:block th:insert="~{common/footer :: footer}"></th:block>
 
 <script th:inline="javascript">
   const currentPage = [[${posts.number}]] + 1;
