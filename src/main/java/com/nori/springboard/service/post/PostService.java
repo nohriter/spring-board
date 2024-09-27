@@ -15,7 +15,10 @@ import com.nori.springboard.entity.post.PostRepository;
 import com.nori.springboard.exception.InvalidParameterException;
 import com.nori.springboard.exception.NotFoundMemberException;
 import com.nori.springboard.exception.post.NotFoundPostException;
+import com.nori.springboard.service.image.ImageSimpleResponse;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -80,17 +83,21 @@ public class PostService {
 		// 'ALL'인 경우 모든 게시글을 조회
 		if (categoryType == CategoryType.ALL) {
 			return postRepository.findByBoardTitle(boardTitle, pageRequest)
-				.map(PostResponse::of);		}
+				.map(PostResponse::of);
+		}
 
 		return postRepository.findByBoardTitleAndCategoryType(boardTitle, categoryType, pageRequest)
 			.map(PostResponse::of);
 	}
 
 	@Transactional(readOnly = true)
-	public PostResponse getPost(Long postId) {
+	public PostDetailResponse getPost(Long postId) {
 		Post post = findPostById(postId);
+		List<ImageSimpleResponse> images = imageRepository.findByPostId(post.getId()).stream()
+			.map(image -> new ImageSimpleResponse(image.getId(), image.getUrl()))
+			.toList();
 
-		return PostResponse.of(post);
+		return PostDetailResponse.of(post, images);
 	}
 
 	public void verifyPostOwner(Long memberId, Long writerId) {
@@ -108,9 +115,40 @@ public class PostService {
 
 		verifyPostOwner(memberId, post.getWriter().getId());;
 
+		List<String> imageIds = request.getImageIds();
+
+		updateImagePostMapping(imageIds, post);
+
 		post.update(category, request.getTitle(), request.getContent());
 
 		return PostResponse.of(post);
+	}
+
+	private void updateImagePostMapping(List<String> newImageIds, Post post) {
+		// 1. 기존 게시물에 매핑된 이미지 목록을 가져온다.
+		List<Image> currentImages = imageRepository.findByPostId(post.getId());
+
+		// 2. 수정 폼에서 전달된 이미지 목록과 기존 이미지 목록을 비교한다.
+		Set<String> newImageIdSet = new HashSet<>(newImageIds);
+
+		// 3. 기존 이미지 중 삭제된 이미지를 찾아 처리한다.
+		for (Image currentImage : currentImages) {
+			if (!newImageIdSet.contains(currentImage.getId().toString())) {
+				currentImage.removePost();
+			}
+		}
+
+		for (String newImageId : newImageIds) {
+			boolean isAlreadyMapped = currentImages.stream()
+				.anyMatch(image -> image.getId().toString().equals(newImageId));
+			if (!isAlreadyMapped) {
+				Image newImage = imageRepository.findById(Long.parseLong(newImageId))
+					.orElseThrow(() -> new IllegalArgumentException("Invalid image ID: " + newImageId));
+
+				newImage.registerPost(post);
+				imageRepository.save(newImage);
+			}
+		}
 	}
 
 	public void deletePost(Long memberId, Long postId) {

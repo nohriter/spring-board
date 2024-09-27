@@ -25,14 +25,14 @@
       <div class="col-12">
         <h2 class="text-center mb-4">글 삭제</h2>
         <form id="deleteForm" onsubmit="return false;">
-          <div class="mb-4">
+          <div>
             <label for="password" class="form-label">비밀번호</label>
             <input type="password" class="form-control" id="password" name="password" required>
           </div>
-          <div class="mt-1 mb-1 error-message" id="error-message">비밀번호가 일치하지 않습니다.</div>
-          <div class="btn-group">
+          <div class="error-message" id="error-message">비밀번호가 일치하지 않습니다.</div>
+          <div class="btn-group mt-3">
             <button type="button" class="btn btn-primary w-50 me-2" id="confirmBtn">확인</button>
-            <button type="button" class="btn btn-secondary w-50" id="cancelBtn">취소</button>
+            <button type="button" class="btn btn-secondary w-50" th:onclick="goBack()">취소</button>
           </div>
         </form>
       </div>
@@ -40,9 +40,6 @@
   </main>
 </div>
 
-<div th:insert="~{common/footer :: footer}"></div>
-
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script th:inline="javascript">
   // 엔터 키를 눌렀을 때 확인 버튼의 동작을 호출하도록 처리
   $('#deleteForm').on('keydown', function(event) {
@@ -82,10 +79,6 @@
     }
   });
 
-  // 취소 버튼 클릭 시 이전 페이지로 이동
-  $('#cancelBtn').on('click', function() {
-    window.history.back();
-  });
 </script>
 </body>
 </html>

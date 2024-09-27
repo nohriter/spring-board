@@ -30,17 +30,21 @@ class MyUploadAdapter {
         method: 'POST',
         body: formData,
       })
-      .then(response => response.json())
-      .then(result => {
+      .then(response => {
+        if (!response.ok) {
+          return response.json().then(errorData => {
+            throw new Error(errorData.message || `Upload failed with status: ${response.status}`);
+          });
+        }
+        return response.json();
+      })      .then(result => {
         if (result.url) {
           ImageManager.addImage(result.imageId, result.url);
-          console.log("upload images: ", ImageManager.getImageIds());
           return { default: result.url }; // 이미지 URL 반환
         }
         throw new Error('Upload failed');
       })
       .catch(error => {
-        console.error('Upload error:', error);
         return Promise.reject(error.message || 'Upload failed');
       });
     });
@@ -55,6 +59,13 @@ function MyCustomUploadAdapterPlugin(editor) {
 
 export const ImageManager = {
   uploadedImages: [],
+
+  updateImages(images) {
+    this.uploadedImages = images.map(image => ({
+      imageId: image.id,
+      url: image.url || ""
+    }))
+  },
 
   addImage(imageId, url) {
     if (!this.uploadedImages.some(image => image.imageId === imageId)) {

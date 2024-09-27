@@ -13,6 +13,11 @@ spring:
       s3:
         bucket: nohriter-gesipan
 
+  servlet:
+    multipart:
+      max-file-size: 5MB  # 단일 파일 크기 제한
+      max-request-size: 20MB  # 전체 요청 크기 제한
+
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
 
@@ -47,11 +52,6 @@ spring:
   sql:
     init:
       mode: always
-
-  servlet:
-    multipart:
-      max-file-size: 1MB  # 단일 파일 크기 제한
-      max-request-size: 1MB  # 전체 요청 크기 제한
 
   mail:
     host: smtp.gmail.com

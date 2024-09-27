@@ -4,6 +4,8 @@ import com.nori.springboard.config.Login;
 import com.nori.springboard.entity.category.CategoryType;
 import com.nori.springboard.service.category.CategoryResponse;
 import com.nori.springboard.service.category.CategoryService;
+import com.nori.springboard.service.image.ImageService;
+import com.nori.springboard.service.post.PostDetailResponse;
 import com.nori.springboard.service.post.PostGuestService;
 import com.nori.springboard.service.post.PostResponse;
 import com.nori.springboard.service.post.PostService;
@@ -36,13 +38,14 @@ public class PostController {
 	private final PostService postService;
 	private final PostGuestService postGuestService;
 	private final CategoryService categoryService;
+	private final ImageService imageService;
 
 	@InitBinder
 	public void initBinder(WebDataBinder binder) {
 		binder.registerCustomEditor(CategoryType.class, new PropertyEditorSupport() {
 			@Override
 			public void setAsText(String text) {
-				setValue(CategoryType.of(text));  // 대소문자 구분 없이 처리
+				setValue(CategoryType.of(text));
 			}
 		});
 	}
@@ -70,12 +73,12 @@ public class PostController {
 	public String getPost(@RequestParam(value = "id") String boardTitle,
 		@RequestParam(value = "category") String category, @PathVariable Long postId, Model model) {
 
-		PostResponse post = postService.getPost(postId);
+		PostDetailResponse response = postService.getPost(postId);
 
 		model.addAttribute("boardTitle", boardTitle);
-		model.addAttribute("post", post);
+		model.addAttribute("post", response);
 		model.addAttribute("category", category);
-		model.addAttribute("categoryName", post.getCategoryName());
+		model.addAttribute("categoryName", response.getCategoryName());
 
 		return "post/viewPost";
 	}
@@ -105,13 +108,13 @@ public class PostController {
 	@GetMapping("/board/modify/{postId}")
 	public String modifyPostForm(@Login Long memberId, @RequestParam(value = "id") String boardTitle,
 		@PathVariable Long postId, Model model) {
-		PostResponse post = postService.getPost(postId);
+		PostDetailResponse response = postService.getPost(postId);
 
-		postService.verifyPostOwner(memberId, post.getWriterId());
+		postService.verifyPostOwner(memberId, response.getWriterId());
 		List<CategoryResponse> categories = categoryService.getCategoriesByBoard(boardTitle);
 
 		model.addAttribute("boardTitle", boardTitle);
-		model.addAttribute("post", post);
+		model.addAttribute("post", response);
 		model.addAttribute("categories", categories);
 
 		return "post/editPost";
@@ -121,12 +124,13 @@ public class PostController {
 	public String editPost(@Login Long memberId, @PathVariable Long postId, @ModelAttribute PostRequest request,
 		RedirectAttributes redirect) {
 
-		postService.updatePost(memberId, postId, request);
+		PostResponse response = postService.updatePost(memberId, postId, request);
 
 		redirect.addAttribute("postId", postId);
 		redirect.addAttribute("boardTitle", request.getBoardTitle());
+		redirect.addAttribute("category", response.getCategoryEngName());
 
-		return "redirect:/board/view/{postId}?id={boardTitle}";
+		return "redirect:/board/view/{postId}?id={boardTitle}&category={category}";
 	}
 
 	@PostMapping("/board/{postId}/delete")
@@ -157,22 +161,7 @@ public class PostController {
 		return "redirect:/board/view/{postId}?id={boardTitle}&category={category}";
 	}
 
-//	@GetMapping("/board/guest/modify/{postId}")
-//	public String modifyPostForm(@RequestParam(value = "id") String boardTitle,
-//		@PathVariable Long postId, Model model) {
-//		PostResponse post = postService.getPost(postId);
-//
-//		postService.verifyPostOwner(memberId, post.getWriterId());
-//		List<CategoryResponse> categories = categoryService.getCategoriesByBoard(boardTitle);
-//
-//		model.addAttribute("boardTitle", boardTitle);
-//		model.addAttribute("post", post);
-//		model.addAttribute("categories", categories);
-//
-//		return "post/editPost";
-//	}
-
-	@GetMapping("/board/guest/{postId}/delete")
+	@GetMapping("/board/guest/delete/{postId}")
 	public String deleteGuestPostForm(@PathVariable Long postId, @RequestParam(value = "id") String boardTitle,
 		@RequestParam(value = "category") String category, Model model) {
 

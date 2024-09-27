@@ -51,4 +51,8 @@ public class Image {
 	public void registerPost(Post post) {
 		this.post = post;
 	}
+
+	public void removePost() {
+		this.post = null;
+	}
 }

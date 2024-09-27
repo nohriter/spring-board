@@ -1,36 +1,89 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-  <th:block th:insert="~{common/head :: head}"></th:block>
+<th:block th:insert="~{common/head :: head}"></th:block>
 <body>
-  <th:block th:insert="~{common/header :: header}"></th:block>
-  <main>
-      <div class="row justify-content-center">
-        <div class="col-12 col-md-6">
-          <form th:action="@{/board/{postId}/modify(postId=${post.id})}" method="post">
-            <div class="mb-3">
-              <label for="category" class="form-label">카테고리</label>
-              <select class="form-select" id="category" name="categoryType">
-                <th:block th:each="category : ${categories}">
-                  <option th:value="${category.name}" th:text="${category.displayName}"></option>
-                </th:block>
-              </select>
+<th:block th:insert="~{common/header :: header}"></th:block>
+
+<main>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-10">
+                <form id="modifyForm" th:action="@{/board/{postId}/modify(postId=${post.id})}" method="post">
+                    <div class="mb-3">
+                        <label for="category" class="form-label">카테고리</label>
+                        <select class="form-select" id="category" name="categoryType">
+                            <th:block th:each="category : ${categories}">
+                                <option th:value="${category.name}"
+                                        th:text="${category.displayName}"></option>
+                            </th:block>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="title" class="form-label">제목</label>
+                        <input th:value="${post.title}" type="text" class="form-control" id="title"
+                               name="title">
+                    </div>
+                    <div class="mb-3">
+                        <label for="editor" class="form-label">내용</label>
+                        <div id="editor"></div>
+                    </div>
+                    <div th:if="${session.loginMember == post.writerId}"
+                         class="d-flex justify-content-start">
+                        <button type="submit" class="btn btn-primary me-2">완료</button>
+                        <button type="button" class="btn btn-primary" onclick="goBack()">취소</button>
+                    </div>
+                    <input type="hidden" name="boardTitle" th:value="${boardTitle}">
+                    <input type="hidden" id="hidden-content" name="content">
+                    <input type="hidden" id="hidden-imageIds" name="imageIds">
+                </form>
             </div>
-            <div class="mb-3">
-              <label for="title" class="form-label">제목</label>
-              <input th:value="${post.title}" type="text" class="form-control" id="title" name="title" >
-            </div>
-            <div class="mb-3">
-              <label for="content" class="form-label">내용</label>
-              <textarea th:text="${post.content}" class="form-control" id="content" name="content" rows="6" ></textarea>
-            </div>
-            <div th:if="${session.loginMember == post.writerId}" class="d-flex justify-content-start">
-              <button type="submit" class="btn btn-primary me-2">완료</button>
-              <button type="button" class="btn btn-primary" onclick="goBack()">취소</button>
-            </div>
-            <input type="hidden" name="boardTitle" th:value="${boardTitle}">
-          </form>
         </div>
-      </div>
-    </main>
+    </div>
+</main>
+
+<script th:inline="javascript">
+  const postContent = [[${post.content}]];
+  const images = [[${post.images}]];
+</script>
+
+<script type="module">
+  import {initializeEditor, handlePostSubmit, ImageManager} from '/js/editor.js';
+
+  let editorInstance;
+
+  document.addEventListener('DOMContentLoaded', () => {
+    initializeEditor('#editor').then(editor => {
+      editorInstance = editor;
+      editorInstance.setData(postContent);
+      ImageManager.updateImages(images);
+    });
+
+    const form = document.getElementById('modifyForm');
+    form.addEventListener('submit', (event) => {
+      if (!validateForm()) {
+        event.preventDefault();
+      }
+    });
+  });
+
+  function validateForm() {
+    const htmlContent = editorInstance.getData();
+    console.log("htmlContent :", htmlContent);
+
+    if (htmlContent.trim() === "") {
+      alert("내용을 입력해주세요.")
+      return false;
+    }
+
+    handlePostSubmit(editorInstance);
+
+    document.getElementById('hidden-content').value = htmlContent;
+
+    document.getElementById('hidden-imageIds').value = ImageManager.getImageIds();
+
+    return true;
+  }
+</script>
+
 </body>
 </html>

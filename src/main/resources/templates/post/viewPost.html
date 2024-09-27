@@ -30,8 +30,8 @@
                         </div>
 
                         <div th:if="${post.writerId == null}" class="d-flex justify-content-end mb-1">
-                            <button type="button" id="guestModifyBtn" th:onclick="|location.href='@{/board/guest/{postId}/modify(postId=${post.id}, id=${boardTitle})}'|" class="btn btn-sm btn-primary me-2">수정</button>
-                            <button type="button" id="guestDeleteBtn" th:onclick="|location.href='@{/board/guest/{postId}/delete(postId=${post.id}, id=${boardTitle}, category=${category})}'|" class="btn btn-sm btn-primary me-2">삭제</button>
+                            <!--<button type="button" id="guestModifyBtn" th:onclick="|location.href='@{/board/guest/modify/{postId}(postId=${post.id}, id=${boardTitle})}'|" class="btn btn-sm btn-primary me-2">수정</button>-->
+                            <button type="button" id="guestDeleteBtn" th:onclick="|location.href='@{/board/guest/delete/{postId}(postId=${post.id}, id=${boardTitle}, category=${category})}'|" class="btn btn-sm btn-primary me-2">삭제</button>
                         </div>
                     </div>
 

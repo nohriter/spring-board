@@ -1,6 +1,6 @@
 INSERT INTO member (login_id, nickname, is_deleted, is_email_verified, password)
 VALUES
-    ('admin@gmail.com','뽀로로', false, true, '$2a$10$/UmJ6bLbTxI.4bEnk8BNwuSOAQInf0wKyvklE42YtQqhGoYKIgysm'),
+    ('admin@gmail.com','관리자', false, true, '$2a$10$/UmJ6bLbTxI.4bEnk8BNwuSOAQInf0wKyvklE42YtQqhGoYKIgysm'),
     ('sub@gmail.com','하츄핑', false, true, '$2a$10$/UmJ6bLbTxI.4bEnk8BNwuSOAQInf0wKyvklE42YtQqhGoYKIgysm'),
     ('test@gmail.com', '사이타마', false, true, '$2a$10$/UmJ6bLbTxI.4bEnk8BNwuSOAQInf0wKyvklE42YtQqhGoYKIgysm');
 
@@ -21,11 +21,12 @@ VALUE
 
 INSERT INTO post (board_id, category_id, created_at, updated_at, view_count, member_id, content, title, is_deleted) VALUES
 (1, 1, '2024-08-22 00:00:01', DATE(now()), 10, 1, '1 번째 글 내용', '1 번째 글 제목', false),
-(1, 1, '2024-08-22 00:00:02', '2024-08-22 00:00:02', 11, 2, '2 번째 글 내용', '2 번째 글 제목', false),
+(2, 1, '2024-09-22 12:00:01', DATE(now()), 0, 1, '내용입니다.', '관리자 작성 글', false),
+(1, 1, '2024-08-22 00:00:02', '2024-08-22 00:00:02', 11, 1, '2 번째 글 내용', '2 번째 글 제목', false),
 (1, 2, '2024-08-22 00:00:03', '2024-08-22 00:00:03', 12, 3, '3 번째 글 내용', '3 번째 글 제목', false),
 (1, 1, '2024-08-22 00:00:04', '2024-08-22 00:00:04', 13, 1, '4 번째 글 내용', '4 번째 글 제목', false),
 (1, 2, '2024-08-22 00:00:05', '2024-08-22 00:00:05', 14, 2, '5 번째 글 내용', '5 번째 글 제목', false),
-(1, 1, '2024-08-22 00:00:06', '2024-08-22 00:00:06', 15, 3, '6 번째 글 내용', '6 번째 글 제목', false),
+(1, 1, '2024-08-22 00:00:06', '2024-08-22 00:00:06', 15, 1, '6 번째 글 내용', '6 번째 글 제목', false),
 (1, 2, '2024-08-22 00:00:07', '2024-08-22 00:00:07', 16, 1, '7 번째 글 내용', '7 번째 글 제목', false),
 (1, 2, '2024-08-22 00:00:08', '2024-08-22 00:00:08', 17, 2, '8 번째 글 내용', '8 번째 글 제목', false),
 (1, 2, '2024-08-22 00:00:09', '2024-08-22 00:00:09', 18, 3, '9 번째 글 내용', '9 번째 글 제목', false),
